@@ -1,0 +1,39 @@
+body {
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+}
+
+.menssagem-block p {
+    padding: 8px;
+}
+
+/* Clóvis - 20170630...
+
+.table > thead > tr > th{
+    border-right: 1px solid #ddd;
+    border-bottom:0;
+}
+
+.table > tbody > tr > td{
+    border-right: 1px solid #ddd;
+}
+
+.table > thead > tr > th:last-of-type {
+    border-right: 0px;
+}
+
+.table > tbody > tr > td:last-of-type {
+    border-right: 0px;
+}
+
+.panel-body {
+    padding: 0;
+}
+
+.panel-body > .table{margin-bottom:0px;}
+/* ...Clóvis - 20170630 */
+

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <title>Plataforma de Consultas de dados censitários</title>
+      <!--<script src="http://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.2/angular.js"></script>-->
+      <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+      <script src="https://ajax.googleapis.com/ajax/libs/angular-ui-router/1.0.0-rc.1/angular-ui-router.min.js"></script>
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+      <script src="javascripts/app.js" type="text/javascript"></script>
+      <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">            
+      <link rel='stylesheet' href='/stylesheets/style.css'/>
+   </head>
+   <!-- ******************************** -->
+   <!-- ng-controller = submitController -->
+   <!-- ******************************** -->
+
+   <script type="text/javascript">
+      function disableGera () {
+         // document.getElementById("btnConfSolic").disabled = true;
+         document.getElementById("btnGeraArq").disabled = true;
+         document.getElementById("msgConfGera").innerHTML = "Gerando arquivo...";
+         document.getElementById("arqGerado").style.display = "inline-block";
+      }
+      function EnableGera () {
+         // document.getElementById("btnConfSolic").disabled = true;
+         document.getElementById("btnGeraArq").disabled = false;
+         document.getElementById("msgConfGera").innerHTML = "Para gerar o arquivo, clique em \"Gerar arquivo\"";
+
+      }
+   </script>
+   <body class="container" ng-app="censoApp" ng-controller="submitController">
+      <div class="page-header">
+         <h2>Plataforma de Consultas de dados censitários</h2>
+         <small>Bem-vindo à Plataforma</small>
+      </div>
+
+      <!-- Panel: Query Parameters -->
+      <div class="panel panel-default" >
+         <div class="panel-heading">Solicitação de extração de dados</div>
+         <div class="panel-body">
+            <form name="queryForm" > 
+               <div class="form-group"> 
+                  <label>Opções para gerar o arquivo .CSV: </label>
+                  
+                  <div class="radio">
+                     <label class="radio-inline">
+                        <input type="radio" name="formatoDados" checked ng-model="parameters.formatoDados" value="csv-commas" checked>CSV delimitado por vírgulas
+                     </label><br>
+                     <label class="radio-inline">
+                        <input type="radio" name="formatoDados" ng-model="parameters.formatoDados" value="csv-semicolon" disabled>CSV delimitado por pontos e vírgulas
+                     </label>
+                  </div>
+               </div>
+
+               <div class="form-group" style="display: none;"> 
+                  <label>Estrutura  : </label>
+                  <p class="help-block">Você pode escolher a estrutura de arquivo preferida para sua extração.</p>
+                  <div class="radio">
+                     <label class="radio-inline">
+                        <input type="radio" name="estruturaDados" ng-model="parameters.estruturaDados" value="rectangular" checked>Rectangular (Pessoa)
+                     </label>  
+                  
+                     <label class="radio-inline">
+                        <input type="radio" name="estruturaDados" ng-model="parameters.estruturaDados" value="hierarquico">Hierárquico (Domicilio)
+                     </label>  
+                  </div>         
+               </div>
+
+               <div class="form-inline">
+                  <!-- ******************************** -->
+                  <!-- ng-controller = yearsController  -->
+                  <!-- ******************************** -->
+                  <div class="form-group" ng-controller="yearsController"> 
+                     <label>Censos  : </label>
+                     <br>
+                     <select id="ano" name="ano" class="form-control" ng-model="parameters.ano">
+                        <option value="">Selecione um ano</option>
+                        <option value="{{item.codYear}}" ng-repeat="item in data.years">{{item.year}}</option>
+                     </select>
+                  </div>
+
+                  <!-- ******************************** -->
+                  <!-- ng-controller = tablesController -->
+                  <!-- ******************************** -->
+                  <div class="form-group" ng-controller="tablesController"> 
+                     <!--<input type="text" ng-model="parameters.title">-->                  
+                     <label> Selecione uma coleção:</label>
+                     <br>
+                     <select id="colecao" name="colecao" class="form-control" ng-model="parameters.tabela" ng-change="updateX()">
+                        <option value="">Selecione uma coleção</option>
+                        <option value="{{item.codTabela}}" ng-repeat="item in data.tabelas">{{item.tabela}}</option>                     
+                     </select>
+                  </div>
+              
+                  <!-- ******************************** -->
+                  <!-- ng-controller = ufsController    -->
+                  <!-- ******************************** -->
+                  <div class="form-group" ng-controller="ufsController">
+                     <label for="estado">Selecione um estado:</label>
+                     <br>
+                     <select id="estado" name="estado" class="form-control" ng-model="parameters.estado">
+                        <option value="" selected>Todos</option> 
+                        <option value="{{item._id}}" ng-repeat="item in data.ufs">{{item.State}}</option>                 
+                     </select>
+                  </div>
+
+               </div> <!-- class="form-inline" -->
+           
+               <!-- *********************************** -->
+               <!-- ng-controller = variaveisController -->
+               <!-- *********************************** -->
+               <div class="form-group" ng-controller="variaveisController">
+                  <br><br>
+                  <label for="{{item.codvar}}">Selecione as variáveis que deseja incluir na consulta:</label>
+                  <br>
+                  <select multiple id="{{item.codVar}}" name="variaveis[]" class="form-control" size="13" ng-model="parameters.variaveis">
+                     <option value="{{item.codVar}}" ng-repeat="item in data.variaveis">[{{item.codVar}}] {{item.Description}}</option>                 
+                  </select>
+               </div>
+<!--
+               <div class="form-group" ng-controller="variaveisController"> 
+                 <br><br>
+                  <label>Variáveis  : </label>
+                  <p class="help-block">Selecione as variáveis que deseja incluir na consulta</p>
+                  <div class="checkbox"  ng-repeat="item in data.variaveis" size="5">
+                     <label for="{{item.codvar}}">          
+                        <input type="checkbox" 
+                        id="{{item.codVar}}" 
+                        name="variaveis[]"  
+                        value="{{item.codVar}}"> [{{item.codVar}}] {{item.Description}} 
+                     </label>
+                  </div> 
+               </div>
+-->
+               <div>
+               <form>
+                  <!--<input type="text" ng-model="parameters.textoTeste">-->                  
+                  <label for="submitBtn">Confirmação e geração de arquivo: </label> <br> 
+                  <input id="btnConfSolic" class="btn btn-primary" type="submit" value="Confirmar solicitação" ng-click="submitQuery()" onclick="EnableGera()">
+                  
+                  <input id="btnGeraArq" class="btn btn-primary" type="submit" value="Gerar arquivo" ng-click="submitGeraArquivo()" disabled=""  onclick="disableGera()">
+                  <p id="msgConfGera" class="help-block">Confirme e solicitação para ver abaixo um exemplo do dados do arquivo.</p>
+                  <div id="arqGerado" style="display: none">Baixar arquivo gerado: 
+                    <a href="download" download> {{texto}}
+                    </a>
+                  </div>
+                  </form>
+               </div>
+
+            </form>
+
+         <div class="panel-body">
+           <fieldset>
+            <legend>Dados do arquivo</legend>
+            <!-- Add a controller to application -->
+            <div class="table-responsive">
+              <table = class="table table-bordered table-hover table-striped">
+               <thead>
+                 <tr>
+                    <th ng-repeat="(key, val) in dataQuery[0]">{{key}}</th>
+                 </tr>
+               </thead>
+               <head>
+                 <tr ng-repeat="item in dataQuery">
+                    <td ng-repeat="(key, val) in item">{{val}}</td>
+                 </tr>
+               </head>
+              </table>
+            </div>
+           </fieldset>
+         </div>
+
+         </div>
+
+      </div>
+      <!-- End of Parameters panel -->
+
+      <!-- Panel: Samples-->
+      <!-- Samples of CSV file content-->
+
+      <!--
+      <div class="panel panel-default">
+         <div class="panel-body">
+           <fieldset>
+            <legend>Conteúdo arquivo CSV</legend>
+            <div >
+              <table>
+                 <tr>
+                    <th ng-repeat="(key, val) in dataQuery[0]">{{key}}</th>
+                 </tr>
+                 <tr ng-repeat="item in dataQuery">
+                    <td ng-repeat="(key, val) in item">{{val}}</td>
+                 </tr>
+              </table>
+            </div>
+           </fieldset>
+         </div>
+      </div>
+      -->
+
+   </body>
+</html>
