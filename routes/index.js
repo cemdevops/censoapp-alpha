@@ -13,7 +13,10 @@ var url = require('url');
 // var urlAppMongo = 'mongodb://localhost:27017/appMongo';
 
 // db c2010 possui uma quantidade menor de registros
-var urlAppMongo = 'mongodb://172.16.1.94:27017/c2010';
+//var urlAppMongo = 'mongodb://172.16.1.94:27017/c2010';
+var urlMongo = 'mongodb://172.16.1.94:27017';
+var strAppMongo = "appMongo";
+var strCensoDB = "c2010";
 
 // Código responsável para renderizar e redirecionar ao 
 // arquivo angularjs index.html
@@ -25,23 +28,33 @@ router.get('/', function(req, res, next) {
 module.exports = router;
 
 /* GET /resultadoQuery */
+// Chamado em "onSubmit": Visualização de dados do arquivo (10 registros)
 router.post('/query', function(req, res, next) {
-   console.log("POST/QUERY");   
+   console.log("POST/QUERY: ");
 
   var strCollection = 'uf';
+  console.log (req.body)
 
   switch (req.body.tabela) {
     case "emigracao": strCollection  = 'tEmi';
+      // Temporário para censo 2010:
+//      strCollection  = 'emigracoes';
       console.log(req.body.tabela);
       break;
     case "domicilio": strCollection  = 'tDom';
       console.log("Tabela: " + req.body.tabela);
+      // Temporário para censo 2010:
+//      strCollection  = 'domicilios';
       break;
     case "pessoa": strCollection  = 'tPes';
       console.log(req.body.tabela);
+      // Temporário para censo 2010:
+//      strCollection  = 'pessoas';
       break;
     case "mortalidade": strCollection  = 'tMor';
       console.log(req.body.tabela);
+      // Temporário para censo 2010:
+//      strCollection  = 'mortalidades';
       break;
     default: strCollection  = 'default';
       console.log("Sem tab");
@@ -72,11 +85,28 @@ router.post('/query', function(req, res, next) {
    strFields += "}";
    console.log ('Projection: ' + strFields);
 
+   // Por enquanto hard coded sobre 2000 e 2010. Alterar para genérico.
+   if (req.body.ano == 2000) {
+     strCensoDB = "c2000";
+   } else {
+     strCensoDB = "c2010";
+   }
+   console.log ('CENSO: ' + req.body.ano + "-" + strCensoDB);
 
-  mongoClient.connect (urlAppMongo, function (err,db) {
+   strQuery = "{}";
+
+  if (req.body.estado) {
+    var varEstado = "V0001";
+    if (req.body.ano == '2000') {
+      varEstado = "V0102";
+    }
+    strQuery = "{\"" + varEstado + "\":" + req.body.estado + "}"
+  }
+
+  mongoClient.connect (urlMongo + "/" + strCensoDB, function (err,db) {
     assert.equal (err, null);
     // urlAppMongo = 'mongodb://localhost:27017/appMongo';
-    dboper.findDocuments (db, strCollection, {}, JSON.parse(strFields), 10, function (result) {
+    dboper.findDocuments (db, strCollection, JSON.parse(strQuery), JSON.parse(strFields), 10, function (result) {
       console.log("Post /query OK!");
       res.json(result);
       db.close();
@@ -125,14 +155,21 @@ router.post('/geraArq', function(req, res, next) {
    strFields += "]";
    console.log ('Projection: ' + strFields);
 
-
   var strOutput = './output/teste.csv';
   var strOptions = '--host 172.16.1.94:27017';
-  var strDBS = "c2010";
+  if (req.body.estado) {
+    var varEstado = "V0001";
+    if (req.body.ano == '2000') {
+      varEstado = "V0102";
+    }
+ //   strOptions += " --query {" + varEstado + ":{$eq:" + req.body.estado + "}}"
+    strOptions += " --query {" + varEstado + ":" + req.body.estado + "}"
+    console.log ("Options: " + strOptions);
+  }
+ 
+  console.log ('Vai gerar arq no ' + strOptions + "/" + strCensoDB);
 
-  console.log ('Vai gerar arq no ' + strOptions + "/" + strDBS);
-
-  var strTemp = "{\"database\":\"c2010\",\"collection\":\"" + strCollection + "\",\"fields\":" + strFields + ",\"output\":\"" +
+  var strTemp = "{\"database\":\"" + strCensoDB + "\",\"collection\":\"" + strCollection + "\",\"fields\":" + strFields + ",\"output\":\"" +
                 strOutput + "\",\"allValidOptions\":\"" + strOptions + "\"}";
   console.log ("Options: " + strTemp);
 
@@ -141,7 +178,7 @@ router.post('/geraArq', function(req, res, next) {
 //  console.log ("ARRAY: " + arrayFields);
 
   var options = {
-    database: strDBS,
+    database: strCensoDB,
     collection: strCollection,
     fields: arrayFields,
     output: strOutput,
@@ -228,10 +265,11 @@ router.get('/data', function(req,res){
 router.get ('/ufs', function(req,res) {
 
   var strCollection = 'uf';
-  //appReso.getVariavel(codVar)
-  mongoClient.connect (urlAppMongo, function (err,db) {
+  // Mudar para appMongo, qdo carregar UFs.
+  strCensoDB = "c2010";
+  mongoClient.connect (urlMongo + "/" + strCensoDB, function (err,db) {
     assert.equal (err, null);
-    console.log ('Connect to mongoDB (Get/ufs) ' + urlAppMongo);
+    console.log ('Connect to mongoDB (Get/ufs) ' + urlMongo + "/" + strCensoDB);
     dboper.findDocuments (db, strCollection, {}, {}, 0, function (result) {
       res.json(result);
     })
@@ -264,10 +302,14 @@ router.get('/variaveis', function(req,res){
       break;
   }
 
-  mongoClient.connect (urlAppMongo, function (err,db) {
+  strCollection = strCollection + req.query.ano;
+  //strCollection = strCollection + ano;
+  console.log ("strCollection =" + strCollection)
+
+  mongoClient.connect (urlMongo + "/" + strAppMongo, function (err,db) {
     assert.equal (err, null);
     strFiltro = {showInPage:{$gt:0}};
-    console.log ('Connect to mongoDB (Get/Variaveis) ' + urlAppMongo + ". TAB=" + strCollection);
+    console.log ('Connect to mongoDB (Get/Variaveis) ' + urlMongo + "/" + strAppMongo + ". TAB=" + strCollection);
     dboper.findDocuments (db, strCollection, strFiltro, {}, 0, function (result) {
       res.json(result);
     })

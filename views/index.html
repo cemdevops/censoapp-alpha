@@ -26,7 +26,17 @@
          // document.getElementById("btnConfSolic").disabled = true;
          document.getElementById("btnGeraArq").disabled = false;
          document.getElementById("msgConfGera").innerHTML = "Para gerar o arquivo, clique em \"Gerar arquivo\"";
-
+      }
+      function changeCenso () {
+         // document.getElementById("btnConfSolic").disabled = true;
+  //       alert(document.getElementById("colecao").selectedIndex);
+        // document.getElementById("colecao").selectedIndex = 0;
+         document.getElementById("colecao").selectedIndex = 0;
+//         document.getElementById("colecao").value = "selecione";
+         document.getElementById("estado").selectedIndex = 0;
+//         document.getElementById("colecao").innerHTML = "Para gerar o arquivo";
+//         document.getElementById("ano").options [0] = selected;
+//         document.getElementById("msgConfGera").innerHTML = "Para gerar o arquivo, clique em \"Gerar arquivo\"";
       }
    </script>
    <body class="container" ng-app="censoApp" ng-controller="submitController">
@@ -40,7 +50,7 @@
          <div class="panel-heading">Solicitação de extração de dados</div>
          <div class="panel-body">
             <form name="queryForm" > 
-               <div class="form-group"> 
+               <div class="form-group">
                   <label>Opções para gerar o arquivo .CSV: </label>
                   
                   <div class="radio">
@@ -64,7 +74,7 @@
                      <label class="radio-inline">
                         <input type="radio" name="estruturaDados" ng-model="parameters.estruturaDados" value="hierarquico">Hierárquico (Domicilio)
                      </label>  
-                  </div>         
+                  </div>
                </div>
 
                <div class="form-inline">
@@ -74,7 +84,7 @@
                   <div class="form-group" ng-controller="yearsController"> 
                      <label>Censos  : </label>
                      <br>
-                     <select id="ano" name="ano" class="form-control" ng-model="parameters.ano">
+                     <select id="ano" name="ano" class="form-control" onchange="changeCenso()"" ng-model="parameters.ano" ng-change="changeCenso()">
                         <option value="">Selecione um ano</option>
                         <option value="{{item.codYear}}" ng-repeat="item in data.years">{{item.year}}</option>
                      </select>
@@ -87,7 +97,7 @@
                      <!--<input type="text" ng-model="parameters.title">-->                  
                      <label> Selecione uma coleção:</label>
                      <br>
-                     <select id="colecao" name="colecao" class="form-control" ng-model="parameters.tabela" ng-change="updateX()">
+                     <select id="colecao" name="colecao" class="form-control" ng-model="parameters.tabela" ng-change="updateVars()">
                         <option value="">Selecione uma coleção</option>
                         <option value="{{item.codTabela}}" ng-repeat="item in data.tabelas">{{item.tabela}}</option>                     
                      </select>
@@ -100,8 +110,8 @@
                      <label for="estado">Selecione um estado:</label>
                      <br>
                      <select id="estado" name="estado" class="form-control" ng-model="parameters.estado">
-                        <option value="" selected>Todos</option> 
-                        <option value="{{item._id}}" ng-repeat="item in data.ufs">{{item.State}}</option>                 
+                        <option value="">Todos</option> 
+                        <option value="{{item._id}}" ng-repeat="item in data.ufs">{{item.State}}</option>
                      </select>
                   </div>
 
@@ -133,6 +143,7 @@
                   </div> 
                </div>
 -->
+            </form>
                <div>
                <form>
                   <!--<input type="text" ng-model="parameters.textoTeste">-->                  
@@ -145,10 +156,9 @@
                     <a href="download" download> {{texto}}
                     </a>
                   </div>
-                  </form>
+               </form>
                </div>
 
-            </form>
 
          <div class="panel-body">
            <fieldset>

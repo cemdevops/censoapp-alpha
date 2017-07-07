@@ -91,21 +91,26 @@ app.controller('ufsController', function($scope, $http) {
 });
 
 //Add a controller to App to show the census's years
-app.controller('yearsController',['$scope', listYears]);
+app.controller('yearsController',['$scope', '$rootScope', listYears]);
 
-function listYears($scope) {
+function listYears($scope, $rootScope) {
     //$scope.data = [];
+    // Modificar para obter anos do BD
     $scope.data = {
         model: null,
         years: [
             {codYear:'2010', year:'2010'},
-            {codYear:'2000', year:'2000'},
-            {codYear:'1991', year:'1991'},
-            {codYear:'1980', year:'1980'},
-            {codYear:'1970', year:'1970'},
-            {codYear:'1960', year:'1960'}
+            {codYear:'2000', year:'2000'}
         ]
     };          
+    $scope.changeCenso = function () {
+        objTabela = $scope.parameters;
+        objParam = {params:objTabela};
+        // Limpa a lsita de coleções (até descobrir como fazer isso no callFillTables)
+        $rootScope.$broadcast ("callClearTables", objParam);
+        // Preenche a lsita de coleções
+        $rootScope.$broadcast ("callFillTables", objParam);
+    }
 };
 
 //Add a controller to App to show the census's tables
@@ -113,28 +118,90 @@ app.controller('tablesController',['$scope', '$http', '$rootScope', listTables])
 
 function listTables($scope, $rootScope, $http) {
     console.log ('Run tablesController');
-    $scope.data = [];
-    
+    /*
     $scope.data = {
         model: null,
-        tabelas: [
-            {codTabela:'domicilio', tabela:'Domicilio'},
-            {codTabela:'pessoa', tabela:'Pessoa'},
-            {codTabela:'mortalidade', tabela:'Mortalidade'},
-            {codTabela:'emigracao', tabela:'Emigração'}            
-        ]
+        tabelas: []
     };
-    $scope.updateX = function () {
+    */
+    $scope.data = [];
+
+    $scope.updateVars = function () {
         console.log ("Mudou coleção!!");
-//        alert ($scope.data.tabelas [1].tabela = "xxxx");
         objTabela = $scope.parameters;
         console.log(objTabela);
         objParam = {params:objTabela};
         console.log(objParam);
         console.log(objParam.params);
-         //,{params: $scope.parameters}
         $scope.$emit ("callFillVar", objParam);
     }
+
+    $scope.$on ("callClearTables", function(event, data) {
+        console.log ("callClearTables: " + data.params.ano);
+        $scope.data = [];
+        if (data.params.ano == 2000) {
+            $scope.data = {
+                model: null,
+                tabelas: [
+                    {codTabela:'', tabela:''},
+                    {codTabela:'', tabela:''}
+                ]
+            };
+        } else {
+            $scope.data = {
+                model: null,
+                tabelas: [
+                    {codTabela:'', tabela:''},
+                    {codTabela:'', tabela:''},
+                    {codTabela:'', tabela:''},
+                    {codTabela:'', tabela:''}            
+                ]
+            };
+        }
+    });
+
+    $scope.$on ("callFillTables", function(event, data) {
+        console.log ("on callFillTables: " + data.params.ano);
+        $scope.data = [];
+//        $scope.data = [];
+        switch (data.params.ano) {
+          case '2000':
+            $scope.data = {
+                model: null,
+                tabelas: [
+                    {codTabela:'domicilio', tabela:'Domicilio'},
+                    {codTabela:'pessoa', tabela:'Pessoa'}
+                ]
+            };
+            break;
+          case '2010':
+            $scope.data = {
+                model: null,
+                tabelas: [
+                    {codTabela:'mortalidade', tabela:'Mortalidade'},
+                    {codTabela:'emigracao', tabela:'Emigração'},
+                    {codTabela:'domicilio', tabela:'Domicilio'},
+                    {codTabela:'pessoa', tabela:'Pessoa'}
+                ]
+            };
+            break;
+          default:
+            break;
+        }
+
+        console.log ("$scope.parameters.tabela");
+        console.log ($scope.parameters.tabela);
+        $scope.parameters.tabela = "";
+        objTabela = $scope.parameters;
+        objParam = {params:objTabela};
+        $scope.$emit ("callFillVar", objParam);
+        /*
+        $scope.$apply (function () {
+            $scope.parameters.tabela = "";
+        });
+        */
+        
+    });
 };
 
 //Add a controller to App to show the list of table's variable
