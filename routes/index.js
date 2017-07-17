@@ -28,33 +28,21 @@ router.get('/', function(req, res, next) {
 module.exports = router;
 
 /* GET /resultadoQuery */
-// Chamado em "onSubmit": Visualização de dados do arquivo (10 registros)
+// From "onSubmit": Visualization of file data (10 records)
 router.post('/query', function(req, res, next) {
    console.log("POST/QUERY: ");
 
-  var strCollection = 'uf';
-  console.log (req.body)
+  var strCollection = "";
+  console.log("Tabela: " + req.body.tabela);
 
   switch (req.body.tabela) {
     case "emigracao": strCollection  = 'tEmi';
-      // Temporário para censo 2010:
-//      strCollection  = 'emigracoes';
-      console.log(req.body.tabela);
       break;
     case "domicilio": strCollection  = 'tDom';
-      console.log("Tabela: " + req.body.tabela);
-      // Temporário para censo 2010:
-//      strCollection  = 'domicilios';
       break;
     case "pessoa": strCollection  = 'tPes';
-      console.log(req.body.tabela);
-      // Temporário para censo 2010:
-//      strCollection  = 'pessoas';
       break;
     case "mortalidade": strCollection  = 'tMor';
-      console.log(req.body.tabela);
-      // Temporário para censo 2010:
-//      strCollection  = 'mortalidades';
       break;
     default: strCollection  = 'default';
       console.log("Sem tab");
@@ -70,9 +58,9 @@ router.post('/query', function(req, res, next) {
 
    console.log('COD-ESTADO: ' + codEstado);
    if (req.body.variaveis) {
-     console.log ('Variável existe')
-     console.log ('TAM VARIAVEIS: ' + req.body.variaveis.length);
-     console.log ('VARIAVEIS: ' + req.body.variaveis);
+//     console.log ('Variável existe')
+//     console.log ('TAM VARIAVEIS: ' + req.body.variaveis.length);
+//     console.log ('VARIAVEIS: ' + req.body.variaveis);
      for (i = 0; i < req.body.variaveis.length; i++) {
        if (i > 0) {
          strFields += ",";
@@ -85,20 +73,36 @@ router.post('/query', function(req, res, next) {
    strFields += "}";
    console.log ('Projection: ' + strFields);
 
-   // Por enquanto hard coded sobre 2000 e 2010. Alterar para genérico.
+   // Por enquanto hard coded sobre 1991, 2000 e 2010. Alterar para genérico.
    if (req.body.ano == 2000) {
      strCensoDB = "c2000";
-   } else {
+   } else if (req.body.ano == 2010) {
      strCensoDB = "c2010";
+   } else if (req.body.ano == 1991) {
+     strCensoDB = "c1991";
+   } else if (req.body.ano == 1970) {
+     strCensoDB = "c1970";
+   } else {
+     strCensoDB = "censo"
    }
    console.log ('CENSO: ' + req.body.ano + "-" + strCensoDB);
 
    strQuery = "{}";
 
   if (req.body.estado) {
-    var varEstado = "V0001";
-    if (req.body.ano == '2000') {
-      varEstado = "V0102";
+    var varEstado = "";
+    switch (req.body.ano) {
+      case "2010": varEstado  = "V0001";
+        break;
+      case "2000": varEstado  = "V0102";
+        break;
+      case "1991": varEstado  = "VAR1101";
+        break;
+      case "1970": varEstado  = "V055";
+        break;
+      default: varEstado  = "V0001";
+        console.log("Sem Estado");
+        break;
     }
     strQuery = "{\"" + varEstado + "\":" + req.body.estado + "}"
   }
@@ -132,42 +136,54 @@ router.post('/geraArq', function(req, res, next) {
       break;
   }
 
-   console.log('geraArq - nomeColecao: ' + strCollection);
+  console.log('geraArq - nomeColecao: ' + strCollection);
 
-   // nome do estado
-   var codEstado = req.body.estado;
+  // nome do estado
+  var codEstado = req.body.estado;
 
-   console.log('GeraArq - COD-ESTADO: ' + codEstado);
+  console.log('GeraArq - COD-ESTADO: ' + codEstado);
 
-   var strFields = "[";
+  var strFields = "[";
 
-   console.log('COD-ESTADO: ' + codEstado);
-   if (req.body.variaveis) {
-     for (i = 0; i < req.body.variaveis.length; i++) {
-       if (i > 0) {
-         strFields += ",";
-       }
-       strFields += '"' + req.body.variaveis[i] + '"';
-     }
-   } else {
-     console.log ('Variável NÃO existe')
-   }
-   strFields += "]";
-   console.log ('Projection: ' + strFields);
+  console.log('COD-ESTADO: ' + codEstado);
+  if (req.body.variaveis) {
+    for (i = 0; i < req.body.variaveis.length; i++) {
+      if (i > 0) {
+        strFields += ",";
+      }
+      strFields += '"' + req.body.variaveis[i] + '"';
+    }
+  } else {
+    console.log ('Variável NÃO existe')
+  }
+  strFields += "]";
+  console.log ('Projection: ' + strFields);
 
   var strOutput = './output/teste.csv';
   var strOptions = '--host 172.16.1.94:27017';
+  // Filter by state only if there is a selected one
   if (req.body.estado) {
-    var varEstado = "V0001";
-    if (req.body.ano == '2000') {
-      varEstado = "V0102";
+    var varEstado = "";
+    switch (req.body.ano) {
+      case "2010": varEstado  = "V0001";
+        break;
+      case "2000": varEstado  = "V0102";
+        break;
+      case "1991": varEstado  = "VAR1101";
+        break;
+      case "1970": varEstado  = "V055";
+        break;
+      default: varEstado  = "V0001";
+        console.log("Sem Estado");
+        break;
     }
- //   strOptions += " --query {" + varEstado + ":{$eq:" + req.body.estado + "}}"
     strOptions += " --query {" + varEstado + ":" + req.body.estado + "}"
     console.log ("Options: " + strOptions);
   }
  
   console.log ('Vai gerar arq no ' + strOptions + "/" + strCensoDB);
+
+  // Must check if strCensoDB is correct here
 
   var strTemp = "{\"database\":\"" + strCensoDB + "\",\"collection\":\"" + strCollection + "\",\"fields\":" + strFields + ",\"output\":\"" +
                 strOutput + "\",\"allValidOptions\":\"" + strOptions + "\"}";
@@ -185,8 +201,7 @@ router.post('/geraArq', function(req, res, next) {
     allValidOptions: strOptions
   };
 
-  console.log ('OPTIONS: ' + options);
-
+//  console.log ('OPTIONS: ' + options);
 
   mongotocsv.export (options, function (err, success) {
     console.log ("Err: " + err);
@@ -261,12 +276,23 @@ router.get('/data', function(req,res){
 **/
 });
 
-// get the information of Auxiliaries tables
+// get the information of UF Collections
 router.get ('/ufs', function(req,res) {
 
   var strCollection = 'uf';
   // Mudar para appMongo, qdo carregar UFs.
-  strCensoDB = "c2010";
+  if (req.query.ano == 2010) {
+    strCensoDB = "c2010";
+  } else if (req.query.ano == 2000) {
+    strCensoDB = "c2010";
+  } else if (req.query.ano == 1991) {
+    strCensoDB = "c1991";
+  } else if (req.query.ano == 1970) {
+    strCensoDB = "c1970";
+  } else {
+    strCensoDB = "";
+  }
+
   mongoClient.connect (urlMongo + "/" + strCensoDB, function (err,db) {
     assert.equal (err, null);
     console.log ('Connect to mongoDB (Get/ufs) ' + urlMongo + "/" + strCensoDB);
@@ -276,7 +302,7 @@ router.get ('/ufs', function(req,res) {
   })
 });
 
-// get the information of variables
+// get information of variables
 router.get('/variaveis', function(req,res){
 
   console.log("GET/VARIAVEIS Parameters:");
@@ -286,7 +312,6 @@ router.get('/variaveis', function(req,res){
 
   switch (req.query.tabela) {
     case "emigracao": strCollection  = 'schemaEmi';
-      console.log(req.query.tabela);
       break;
     case "domicilio": strCollection  = 'schemaDom';
       console.log("Tabela: " + req.query.tabela);
@@ -302,6 +327,7 @@ router.get('/variaveis', function(req,res){
       break;
   }
 
+  // Tem que fazer a consulta pq sem tabela, vai preencher com vaxzio, apagando o que existe
   strCollection = strCollection + req.query.ano;
   //strCollection = strCollection + ano;
   console.log ("strCollection =" + strCollection)
@@ -323,7 +349,7 @@ router.get('/download', function(req,res){
   //var jsonf = JSON.stringify(req);
 
   // Teste de geração de arquivo
-  fs.writeFile("/home/clovis/censomnpmexpcsv/output/test.txt", req, function(err) {
+  fs.writeFile("./output/test.txt", req, function(err) {
       if(err) {
           return console.log(err);
       }
@@ -331,8 +357,9 @@ router.get('/download', function(req,res){
       console.log("The file was saved!");
   });
 
-  var file = __dirname + 'output/teste.csv';
-  file = '/home/clovis/censomnpmexpcsv/output/teste.csv';
+  var file = './output/teste.csv';
+//  console.log("File (1): " + file);
+//  file = '/home/clovis/censomnpmexpcsv/output/teste.csv';
 
   console.log("File: " + file);
 
