@@ -1,11 +1,13 @@
 // The "censoApp" parameter refers to an HTML element in which the application will run.
 // The [] parameter in the module definition can be used to define dependent modules.
 // Without the [] parameter, you are not creating a new module, but retrieving an existing one.
-var app = angular.module('censoApp',[]);
+var censoApp = angular.module('censoApp',[]);
+
+// Module that contains the controllers used in the main app page index.html
 
 // Add a controller to application to show samples of the a query
 /* Clóvis */
-app.controller('censoController', ['$scope', '$http', function sendData($scope, $http) {
+censoApp.controller('censoController', ['$scope', '$http', function sendData($scope, $http) {
     alert ('Iniciou censoController!')
     $http({
         method : 'get',
@@ -21,10 +23,13 @@ app.controller('censoController', ['$scope', '$http', function sendData($scope, 
 }]);
 /* */
 
-app.controller('submitController',['$scope', '$http', function ($scope, $http) {
+// Controller to capture the main form (current all page) submit to generate file sample and generate file
+censoApp.controller('submitController',['$scope', '$http', function ($scope, $http) {
     //$scope.data = {};
     console.log('Chamou function submitController');
-//    alert ('Chamou function submitController');
+
+    // submitQuery generate the sample file to be generated. Fills the variables field
+    // (/query POST request)
     $scope.submitQuery = function(){
         console.log('clicked submit');
         console.log($scope.parameters);
@@ -44,8 +49,10 @@ app.controller('submitController',['$scope', '$http', function ($scope, $http) {
             // or server returns response with an error status.
             $scope.msg = 'Erro na execução da Query :('; 
         });
-    }    
-    $scope.submitGeraArquivo = function(){
+    }
+
+    // submitGeraArquivo will generate the file. (/geraArq POST request)
+    $scope.submitGeraArquivo = function() {
         console.log('clicked submit Gera Arquivo');
         console.log($scope.parameters);
         $http({
@@ -60,9 +67,7 @@ app.controller('submitController',['$scope', '$http', function ($scope, $http) {
             var arrayX= JSON.parse (result)
             console.log (arrayX.output);
             $scope.dataFile = httpResponse.data;
-            $scope.xyzw = arrayX.output;
             $scope.texto = "Clique para download";
-//            console.log("Output: " + httpResponse.data.output);
             console.log('Arquivo gerado!');
             
         }, function(httpResponse) {
@@ -74,8 +79,9 @@ app.controller('submitController',['$scope', '$http', function ($scope, $http) {
 }]);
 
 //Add a controller to App to show the list of Brazil's states
-app.controller('ufsController', function($scope, $http) {
+censoApp.controller('ufsController', function($scope, $http) {
     console.log ('Run ufsController');
+    //console.log ($scope);
     $scope.data = [];
     // A função $http.get ('/ufs') faz a solicitação,
     // então atribuimos o resultado a $scope.data
@@ -88,33 +94,57 @@ app.controller('ufsController', function($scope, $http) {
      }, function myError(response) {
         console.log('Error: ' + response.data);    
     });
+
+    $scope.$on ("callFillUFs", function(event, data) {
+        console.log ("on callFillUFs: " + data.params.ano);
+
+        $http.get('/ufs', data)
+        .then(function (response){        
+            $scope.data = {
+                model: null,
+                ufs: response.data
+            };
+        }, function myError(response) {
+            console.log('Error: ' + response.data);    
+        });
+
+        $scope.parameters.estado = "";
+        
+    });
 });
 
 //Add a controller to App to show the census's years
-app.controller('yearsController',['$scope', '$rootScope', listYears]);
+censoApp.controller('yearsController',['$scope', '$rootScope', '$http', listYears]);
 
-function listYears($scope, $rootScope) {
+function listYears($scope, $rootScope, $http) {
     //$scope.data = [];
     // Modificar para obter anos do BD
     $scope.data = {
         model: null,
         years: [
             {codYear:'2010', year:'2010'},
-            {codYear:'2000', year:'2000'}
+            {codYear:'2000', year:'2000'},
+            {codYear:'1991', year:'1991'},
+            {codYear:'1970', year:'1970'}
         ]
-    };          
+    };
+    // função chamada toda vez q altera ano do cesnso
     $scope.changeCenso = function () {
+        console.log ("changeANO 1: " + $scope.parameters.ano)
         objTabela = $scope.parameters;
         objParam = {params:objTabela};
         // Limpa a lsita de coleções (até descobrir como fazer isso no callFillTables)
-        $rootScope.$broadcast ("callClearTables", objParam);
+//        $rootScope.$broadcast ("callClearTables", objParam);
         // Preenche a lsita de coleções
         $rootScope.$broadcast ("callFillTables", objParam);
+        // Preenche a lista de UFs de acordo com o ano
+        $rootScope.$broadcast ("callFillUFs", objParam);
+
     }
 };
 
 //Add a controller to App to show the census's tables
-app.controller('tablesController',['$scope', '$http', '$rootScope', listTables]);
+censoApp.controller('tablesController',['$scope', '$http', '$rootScope', listTables]);
 
 function listTables($scope, $rootScope, $http) {
     console.log ('Run tablesController');
@@ -129,41 +159,18 @@ function listTables($scope, $rootScope, $http) {
     $scope.updateVars = function () {
         console.log ("Mudou coleção!!");
         objTabela = $scope.parameters;
-        console.log(objTabela);
+//        console.log(objTabela);
         objParam = {params:objTabela};
-        console.log(objParam);
+//        console.log(objParam);
         console.log(objParam.params);
         $scope.$emit ("callFillVar", objParam);
     }
 
-    $scope.$on ("callClearTables", function(event, data) {
-        console.log ("callClearTables: " + data.params.ano);
-        $scope.data = [];
-        if (data.params.ano == 2000) {
-            $scope.data = {
-                model: null,
-                tabelas: [
-                    {codTabela:'', tabela:''},
-                    {codTabela:'', tabela:''}
-                ]
-            };
-        } else {
-            $scope.data = {
-                model: null,
-                tabelas: [
-                    {codTabela:'', tabela:''},
-                    {codTabela:'', tabela:''},
-                    {codTabela:'', tabela:''},
-                    {codTabela:'', tabela:''}            
-                ]
-            };
-        }
-    });
-
     $scope.$on ("callFillTables", function(event, data) {
         console.log ("on callFillTables: " + data.params.ano);
         $scope.data = [];
-//        $scope.data = [];
+        // Aqui vai ter que consultar no BD
+
         switch (data.params.ano) {
           case '2000':
             $scope.data = {
@@ -185,12 +192,34 @@ function listTables($scope, $rootScope, $http) {
                 ]
             };
             break;
+/* Descomentar na medida em que novos BD de censos forem disponibilizados
+          case '1991':
+            $scope.data = {
+                model: null,
+                tabelas: [
+                    {codTabela:'domicilio', tabela:'Domicilio'},
+                    {codTabela:'pessoa', tabela:'Pessoa'}
+                ]
+            };
+            break;
+          case '1970':
+            $scope.data = {
+                model: null,
+                tabelas: [
+                    {codTabela:'domicilio', tabela:'Domicilio'},
+                    {codTabela:'pessoa', tabela:'Pessoa'}
+                ]
+            };
+            break;
+*/
           default:
             break;
         }
 
-        console.log ("$scope.parameters.tabela");
-        console.log ($scope.parameters.tabela);
+// NÃO TEM TABELA
+        //console.log ($scope.parameters.tabela);
+
+        // Associa vazio para apagar tabela que está selecionada!
         $scope.parameters.tabela = "";
         objTabela = $scope.parameters;
         objParam = {params:objTabela};
@@ -205,7 +234,7 @@ function listTables($scope, $rootScope, $http) {
 };
 
 //Add a controller to App to show the list of table's variable
-app.controller('variaveisController', function($scope, $rootScope, $http) {
+censoApp.controller('variaveisController', function($scope, $rootScope, $http) {
     $scope.data = [];
     // A função $http.get ('/variaveis') faz a solicitação,
     // então atribuimos o resultado a $scope.data
@@ -230,7 +259,8 @@ app.controller('variaveisController', function($scope, $rootScope, $http) {
         console.log ('on callFillVar');
 //        console.log ($scope.data);
 //        console.log (data);
-        console.log ("callFillVar: " + data.params);
+        // NÃO TEM data.params
+        //console.log ("callFillVar: " + data.params);
         $http.get('/variaveis', data)
         .then(function (response){
 //            console.log ('$http.get /callFillVar OK');
@@ -243,24 +273,5 @@ app.controller('variaveisController', function($scope, $rootScope, $http) {
         });
     })
 
-    $scope.preencheVar = function(){
-        console.log('clicked preencheVar');
-        alert ('clicked preencheVar');
-        $http({
-            method: 'get',
-            url: '/variaveis',
-//            data: $scope.parameters
-        }).then(function(httpResponse){
-            // this callback will be called asynchronously
-            // when the response is available
-            console.log('PreencheVAR: Query executed successfully!!!!!!!');
-            //console.log(httpResponse);
-            
-        }, function(httpResponse) {
-            // called asynchronously if an error occurs
-            // or server returns response with an error status.
-            $scope.msg = 'Erro na execução da Query :('; 
-        });
-    }     
 });
 
