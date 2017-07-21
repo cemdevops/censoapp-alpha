@@ -43,7 +43,6 @@ censoApp.controller('submitController',['$scope', '$http', function ($scope, $ht
             $scope.dataQuery = httpResponse.data;
             //console.log(httpResponse.data);
             console.log('Query executed successfully!!!!!!!');
-           
         }, function(httpResponse) {
             // called asynchronously if an error occurs
             // or server returns response with an error status.
@@ -57,7 +56,7 @@ censoApp.controller('submitController',['$scope', '$http', function ($scope, $ht
         console.log($scope.parameters);
         $http({
             method: 'post',
-            url: '/geraArq',
+            url: '/files/geraArq',
             data: $scope.parameters
         }).then(function(httpResponse){
             // this callback will be called asynchronously
@@ -65,9 +64,11 @@ censoApp.controller('submitController',['$scope', '$http', function ($scope, $ht
             var result = httpResponse.data;
             console.log(result);
             var arrayX= JSON.parse (result)
-            console.log (arrayX.output);
+            console.log ("Arquivo: " + arrayX.file);
             $scope.dataFile = httpResponse.data;
             $scope.texto = "Clique para download";
+            $scope.fileLink = "files/download/?file=" + arrayX.file;
+            
             console.log('Arquivo gerado!');
             
         }, function(httpResponse) {
@@ -192,7 +193,6 @@ function listTables($scope, $rootScope, $http) {
                 ]
             };
             break;
-/* Descomentar na medida em que novos BD de censos forem disponibilizados
           case '1991':
             $scope.data = {
                 model: null,
@@ -206,12 +206,10 @@ function listTables($scope, $rootScope, $http) {
             $scope.data = {
                 model: null,
                 tabelas: [
-                    {codTabela:'domicilio', tabela:'Domicilio'},
-                    {codTabela:'pessoa', tabela:'Pessoa'}
+                    {codTabela:'geral', tabela:'Geral'}
                 ]
             };
             break;
-*/
           default:
             break;
         }

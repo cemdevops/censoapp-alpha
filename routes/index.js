@@ -5,13 +5,11 @@ var path = require('path');
 var mongoClient = require('mongodb').MongoClient;
 var assert = require ('assert');
 var dboper = require ('../public/javascripts/operMongo');
-var mongotocsv = require ('mongo-to-csv');
-var fs = require('fs');
-var url = require('url');
+//var mongotocsv = require ('mongo-to-csv');
+//var fs = require('fs');
+//var url = require('url');
 
 // create a variable to connect to Mongo
-// var urlAppMongo = 'mongodb://localhost:27017/appMongo';
-
 // db c2010 possui uma quantidade menor de registros
 //var urlAppMongo = 'mongodb://172.16.1.94:27017/c2010';
 var urlMongo = 'mongodb://172.16.1.94:27017';
@@ -43,6 +41,8 @@ router.post('/query', function(req, res, next) {
     case "pessoa": strCollection  = 'tPes';
       break;
     case "mortalidade": strCollection  = 'tMor';
+      break;
+    case "geral": strCollection  = 'tGer';
       break;
     default: strCollection  = 'default';
       console.log("Sem tab");
@@ -118,98 +118,6 @@ router.post('/query', function(req, res, next) {
   })
 });
 
-router.post('/geraArq', function(req, res, next) {
-  console.log("POST/GeraARQ");   
-   // array contendo os campos selecionados da coleção   
-  var strCollection = 'uf';
-
-  switch (req.body.tabela) {
-    case "emigracao": strCollection  = 'tEmi';
-      break;
-    case "domicilio": strCollection  = 'tDom';
-      break;
-    case "pessoa": strCollection  = 'tPes';
-      break;
-    case "mortalidade": strCollection  = 'tMor';
-      break;
-    default: strCollection  = 'default';
-      break;
-  }
-
-  console.log('geraArq - nomeColecao: ' + strCollection);
-
-  // nome do estado
-  var codEstado = req.body.estado;
-
-  console.log('GeraArq - COD-ESTADO: ' + codEstado);
-
-  var strFields = "[";
-
-  console.log('COD-ESTADO: ' + codEstado);
-  if (req.body.variaveis) {
-    for (i = 0; i < req.body.variaveis.length; i++) {
-      if (i > 0) {
-        strFields += ",";
-      }
-      strFields += '"' + req.body.variaveis[i] + '"';
-    }
-  } else {
-    console.log ('Variável NÃO existe')
-  }
-  strFields += "]";
-  console.log ('Projection: ' + strFields);
-
-  var strOutput = './output/teste.csv';
-  var strOptions = '--host 172.16.1.94:27017';
-  // Filter by state only if there is a selected one
-  if (req.body.estado) {
-    var varEstado = "";
-    switch (req.body.ano) {
-      case "2010": varEstado  = "V0001";
-        break;
-      case "2000": varEstado  = "V0102";
-        break;
-      case "1991": varEstado  = "VAR1101";
-        break;
-      case "1970": varEstado  = "V055";
-        break;
-      default: varEstado  = "V0001";
-        console.log("Sem Estado");
-        break;
-    }
-    strOptions += " --query {" + varEstado + ":" + req.body.estado + "}"
-    console.log ("Options: " + strOptions);
-  }
- 
-  console.log ('Vai gerar arq no ' + strOptions + "/" + strCensoDB);
-
-  // Must check if strCensoDB is correct here
-
-  var strTemp = "{\"database\":\"" + strCensoDB + "\",\"collection\":\"" + strCollection + "\",\"fields\":" + strFields + ",\"output\":\"" +
-                strOutput + "\",\"allValidOptions\":\"" + strOptions + "\"}";
-  console.log ("Options: " + strTemp);
-
-//  var options = JSON.parse(strTemp);
-  var arrayFields = JSON.parse (strFields);
-//  console.log ("ARRAY: " + arrayFields);
-
-  var options = {
-    database: strCensoDB,
-    collection: strCollection,
-    fields: arrayFields,
-    output: strOutput,
-    allValidOptions: strOptions
-  };
-
-//  console.log ('OPTIONS: ' + options);
-
-  mongotocsv.export (options, function (err, success) {
-    console.log ("Err: " + err);
-    console.log (success);
-    res.json(strTemp)
-  });
-});
-
 
 // Selecionar os campos escolhidos 
 function selectFields(camposSelecionados){
@@ -239,42 +147,6 @@ function defineLimit(limit){
    return query;
 }
 
-router.get('/data', function(req,res){
-  console.log ('Run router.get /data!');
-  alert ('Run router.get /data!');
-  /**
-   var conn = new MDB(options);
-   
-   // Connect using promises
-   conn.connect(); // Alias conn.open()
-   
-   // Note that when you have issued a query with parameters, 
-   // this will under the hood be executed in two steps 
-   // (one prepare step and one execution step). 
-   conn.prepare('SELECT id,v0001,v0002,v0011 FROM emigracao WHERE v0001=? LIMIT ?')
-   .then(function(prepResult){                  
-      prepResult.exec(['11',5])
-      .then(function(result) {
-         res.json(result.data);   
-         // do something with the result
-         console.log('connection succesful!!');     
-         console.log(result.data);
-            
-      }, function(err){
-         console.error(err);
-      });
-      // We are donde, release it (and do not wait for it, 
-      // release method does not return a promise)
-      prepResult.release();
-      // Close the connection after `release()` executed
-      conn.close();
-
-   }, function(err){
-      //Handle error here
-      console.error(err);
-   });       
-**/
-});
 
 // get the information of UF Collections
 router.get ('/ufs', function(req,res) {
@@ -310,17 +182,17 @@ router.get('/variaveis', function(req,res){
 
   var strCollection = "";
 
+  console.log("Tabela: " + req.query.tabela);
   switch (req.query.tabela) {
     case "emigracao": strCollection  = 'schemaEmi';
       break;
     case "domicilio": strCollection  = 'schemaDom';
-      console.log("Tabela: " + req.query.tabela);
       break;
     case "pessoa": strCollection  = 'schemaPes';
-      console.log(req.query.tabela);
       break;
     case "mortalidade": strCollection  = 'schemaMor';
-      console.log(req.query.tabela);
+      break;
+    case "geral": strCollection  = 'schemaGer';
       break;
     default: strCollection  = 'default';
       console.log("Sem tab");
@@ -340,28 +212,4 @@ router.get('/variaveis', function(req,res){
       res.json(result);
     })
   })
-});
-
-router.get('/download', function(req,res){
-
-  var url_parts = url.parse(req.url,true);
-  console.log(url_parts.query);
-  //var jsonf = JSON.stringify(req);
-
-  // Teste de geração de arquivo
-  fs.writeFile("./output/test.txt", req, function(err) {
-      if(err) {
-          return console.log(err);
-      }
-
-      console.log("The file was saved!");
-  });
-
-  var file = './output/teste.csv';
-//  console.log("File (1): " + file);
-//  file = '/home/clovis/censomnpmexpcsv/output/teste.csv';
-
-  console.log("File: " + file);
-
-  res.download (file);
 });
