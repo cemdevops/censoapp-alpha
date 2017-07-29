@@ -80,6 +80,8 @@ router.post('/query', function(req, res, next) {
      strCensoDB = "c2010";
    } else if (req.body.ano == 1991) {
      strCensoDB = "c1991";
+   } else if (req.body.ano == 1980) {
+     strCensoDB = "c1980";
    } else if (req.body.ano == 1970) {
      strCensoDB = "c1970";
    } else {
@@ -97,6 +99,8 @@ router.post('/query', function(req, res, next) {
       case "2000": varEstado  = "V0102";
         break;
       case "1991": varEstado  = "VAR1101";
+        break;
+      case "1980": varEstado  = "V2";
         break;
       case "1970": varEstado  = "V055";
         break;
@@ -159,6 +163,8 @@ router.get ('/ufs', function(req,res) {
     strCensoDB = "c2010";
   } else if (req.query.ano == 1991) {
     strCensoDB = "c1991";
+  } else if (req.query.ano == 1980) {
+    strCensoDB = "c1980";
   } else if (req.query.ano == 1970) {
     strCensoDB = "c1970";
   } else {

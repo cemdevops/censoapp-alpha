@@ -35,6 +35,8 @@ router.post('/geraArq', function(req, res, next) {
                    break;
       case "1991": strCensoDB  = "c1991";
                    break;
+      case "1980": strCensoDB  = "c1980";
+                   break;
       case "1970": strCensoDB  = "c1970";
                    break;
       default: strCensoDB  = "c2010";
@@ -51,6 +53,8 @@ router.post('/geraArq', function(req, res, next) {
     case "pessoa": strCollection  = 'tPes';
       break;
     case "mortalidade": strCollection  = 'tMor';
+      break;
+    case "geral": strCollection  = 'tGer';
       break;
     default: strCollection  = 'default';
       break;
@@ -89,6 +93,8 @@ router.post('/geraArq', function(req, res, next) {
       case "2000": varEstado  = "V0102";
         break;
       case "1991": varEstado  = "VAR1101";
+        break;
+      case "1980": varEstado  = "V2";
         break;
       case "1970": varEstado  = "V055";
         break;
