@@ -126,6 +126,7 @@ function listYears($scope, $rootScope, $http) {
             {codYear:'2010', year:'2010'},
             {codYear:'2000', year:'2000'},
             {codYear:'1991', year:'1991'},
+            {codYear:'1980', year:'1980'},
             {codYear:'1970', year:'1970'}
         ]
     };
@@ -199,6 +200,14 @@ function listTables($scope, $rootScope, $http) {
                 tabelas: [
                     {codTabela:'domicilio', tabela:'Domicilio'},
                     {codTabela:'pessoa', tabela:'Pessoa'}
+                ]
+            };
+            break;
+          case '1980':
+            $scope.data = {
+                model: null,
+                tabelas: [
+                    {codTabela:'geral', tabela:'Geral'}
                 ]
             };
             break;
