@@ -26,13 +26,26 @@ censoApp.controller('censoController', ['$scope', '$http', function sendData($sc
 // Controller to capture the main form (current all page) submit to generate file sample and generate file
 censoApp.controller('submitController',['$scope', '$http', function ($scope, $http) {
     //$scope.data = {};
+    $scope.parameters = {};
     console.log('Chamou function submitController');
+
+    $scope.parameters.formatoDados = "csv-commas";
 
     // submitQuery generate the sample file to be generated. Fills the variables field
     // (/query POST request)
     $scope.submitQuery = function(){
         console.log('clicked submit');
         console.log($scope.parameters);
+        if ($scope.parameters.formatoDados == null || $scope.parameters.formatoDados == "") {
+            alert("Favor selecionar um formato de dados");
+            return;
+        }
+        if ($scope.parameters.variaveis == null || $scope.parameters.variaveis[0] == null) {
+            alert("Favor selecionar uma ou mais variáveis");
+            return;
+        }
+
+        $scope.msgConfirmaGera = "Para gerar o arquivo, clique em \"Gerar arquivo\"";
         $http({
             method: 'post',
             url: '/query',
@@ -54,6 +67,7 @@ censoApp.controller('submitController',['$scope', '$http', function ($scope, $ht
     $scope.submitGeraArquivo = function() {
         console.log('clicked submit Gera Arquivo');
         console.log($scope.parameters);
+        $scope.msgConfirmaGera = "Gerando arquivo...";
         $http({
             method: 'post',
             url: '/files/geraArq',
@@ -67,6 +81,7 @@ censoApp.controller('submitController',['$scope', '$http', function ($scope, $ht
             console.log ("Arquivo: " + arrayX.file);
             $scope.dataFile = httpResponse.data;
             $scope.texto = "Clique para download";
+            $scope.msgConfirmaGera = "Arquivo gerado";
             $scope.fileLink = "files/download/?file=" + arrayX.file;
             
             console.log('Arquivo gerado!');
@@ -76,7 +91,14 @@ censoApp.controller('submitController',['$scope', '$http', function ($scope, $ht
             // or server returns response with an error status.
             $scope.msg = 'Erro na geração do arquivo:('; 
         });
-    }    
+    }
+
+    $scope.$on ("callFillTables", function(event, data) {
+        console.log ("SUBMITQUERY: on callFillTables: " + data.params.ano);
+        $scope.msgConfirmaGera = "";
+        $scope.texto = "";
+        $scope.fileLink = "";
+    });
 }]);
 
 //Add a controller to App to show the list of Brazil's states
@@ -187,8 +209,8 @@ function listTables($scope, $rootScope, $http) {
             $scope.data = {
                 model: null,
                 tabelas: [
-                    {codTabela:'mortalidade', tabela:'Mortalidade'},
-                    {codTabela:'emigracao', tabela:'Emigração'},
+ //                   {codTabela:'mortalidade', tabela:'Mortalidade'},
+ //                   {codTabela:'emigracao', tabela:'Emigração'},
                     {codTabela:'domicilio', tabela:'Domicilio'},
                     {codTabela:'pessoa', tabela:'Pessoa'}
                 ]
