@@ -22,9 +22,16 @@
 //         document.getElementById("msgConfGera").innerHTML = "Gerando arquivo...";
          document.getElementById("arqGerado").style.display = "inline-block";
       }
+
+      function initGera () {
+         document.getElementById("btnGeraArq").disabled = true;
+         document.getElementById("arqGerado").style.display = "none";
+      }
+      
       function EnableGera () {
          document.getElementById("btnGeraArq").disabled = false;
       }
+
       function changeCenso () {
          // document.getElementById("btnConfSolic").disabled = true;
   //       alert(document.getElementById("colecao").selectedIndex);
@@ -32,10 +39,19 @@
          document.getElementById("colecao").selectedIndex = 0;
 //         document.getElementById("colecao").value = "selecione";
          document.getElementById("estado").selectedIndex = 0;
-         document.getElementById("arqGerado").style.display = "none";
+ //        document.getElementById("arqGerado").style.display = "none";
 //         document.getElementById("colecao").innerHTML = "Para gerar o arquivo";
 //         document.getElementById("ano").options [0] = selected;
 //         document.getElementById("msgConfGera").innerHTML = "Para gerar o arquivo, clique em \"Gerar arquivo\"";
+        initGera ();
+      }
+
+      function changeCollection () {
+        initGera ();
+      }
+
+      function changeUF () {
+        initGera ();
       }
    </script>
    <body class="container" ng-app="censoApp" ng-controller="submitController">
@@ -83,7 +99,7 @@
                   <div class="form-group" ng-controller="yearsController"> 
                      <label>Censos  : </label>
                      <br>
-                     <select id="ano" name="ano" class="form-control" onchange="changeCenso()"" ng-model="parameters.ano" ng-change="changeCenso()">
+                     <select id="ano" name="ano" class="form-control" onchange="changeCenso()" ng-model="parameters.ano" ng-change="changeCenso()">
                         <option value="">Selecione um ano</option>
                         <option value="{{item.codYear}}" ng-repeat="item in data.years">{{item.year}}</option>
                      </select>
@@ -96,7 +112,7 @@
                      <!--<input type="text" ng-model="parameters.title">-->                  
                      <label> Selecione uma coleção:</label>
                      <br>
-                     <select id="colecao" name="colecao" class="form-control" ng-model="parameters.tabela" ng-change="updateVars()">
+                     <select id="colecao" name="colecao" class="form-control" onchange="changeCollection()" ng-model="parameters.tabela" ng-change="updateVars()">
                         <option value="">Selecione uma coleção</option>
                         <option value="{{item.codTabela}}" ng-repeat="item in data.tabelas">{{item.tabela}}</option>                     
                      </select>
@@ -108,7 +124,7 @@
                   <div class="form-group" ng-controller="ufsController">
                      <label for="estado">Selecione um estado:</label>
                      <br>
-                     <select id="estado" name="estado" class="form-control" ng-model="parameters.estado">
+                     <select id="estado" name="estado" class="form-control" onchange="changeUF()" ng-model="parameters.estado" ng-change="changeUF()">
                         <option value="">Todos</option> 
                         <option value="{{item._id}}" ng-repeat="item in data.ufs">{{item.State}}</option>
                      </select>
@@ -154,7 +170,7 @@
                   <p id="msgConfGera" class="help-block">Confirme e solicitação para ver abaixo um exemplo do dados do arquivo.</p>
                   -->
                   <p id="msgConfGera" class="help-block">{{msgConfirmaGera}}</p>
-                  <div id="arqGerado" style="display: none">Baixar arquivo gerado: 
+                  <div id="arqGerado" style="display: none">{{baixarArq}}
                     <a href="{{fileLink}}" download> {{texto}}
                     </a>
                   </div>

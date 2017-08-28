@@ -111,6 +111,7 @@ router.post('/query', function(req, res, next) {
     strQuery = "{\"" + varEstado + "\":" + req.body.estado + "}"
   }
 
+  console.log ("BD: " + strCensoDB + " | Col: " + strCollection + " | Query: " + strQuery + " | Fields: " + strFields);
   mongoClient.connect (urlMongo + "/" + strCensoDB, function (err,db) {
     assert.equal (err, null);
     // urlAppMongo = 'mongodb://localhost:27017/appMongo';
@@ -155,6 +156,7 @@ function defineLimit(limit){
 // get the information of UF Collections
 router.get ('/ufs', function(req,res) {
 
+  console.log ("GET/UFS ANO=: " + req.query.ano)
   var strCollection = 'uf';
   // Mudar para appMongo, qdo carregar UFs.
   if (req.query.ano == 2010) {
@@ -185,6 +187,7 @@ router.get('/variaveis', function(req,res){
 
   console.log("GET/VARIAVEIS Parameters:");
   console.log(req.query);
+  console.log("GET/VARIAVEIS Parameters TABELA=:" + req.query.tabela);
 
   var strCollection = "";
 
