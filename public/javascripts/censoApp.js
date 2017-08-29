@@ -68,6 +68,7 @@ censoApp.controller('submitController',['$scope', '$http', function ($scope, $ht
         console.log('clicked submit Gera Arquivo');
         console.log($scope.parameters);
         $scope.msgConfirmaGera = "Gerando arquivo...";
+        $scope.baixarArq = "";
         $http({
             method: 'post',
             url: '/files/geraArq',
@@ -80,6 +81,7 @@ censoApp.controller('submitController',['$scope', '$http', function ($scope, $ht
             var arrayX= JSON.parse (result)
             console.log ("Arquivo: " + arrayX.file);
             $scope.dataFile = httpResponse.data;
+            $scope.baixarArq = "Baixar arquivo gerado.";
             $scope.texto = "Clique para download";
             $scope.msgConfirmaGera = "Arquivo gerado";
             $scope.fileLink = "files/download/?file=" + arrayX.file;
@@ -93,12 +95,14 @@ censoApp.controller('submitController',['$scope', '$http', function ($scope, $ht
         });
     }
 
-    $scope.$on ("callFillTables", function(event, data) {
-        console.log ("SUBMITQUERY: on callFillTables: " + data.params.ano);
+    $scope.$on ("clearDataQuery", function(event, data) {
+        console.log ("Clear Data Query")
         $scope.msgConfirmaGera = "";
         $scope.texto = "";
         $scope.fileLink = "";
+        $scope.dataQuery = [];
     });
+
 }]);
 
 //Add a controller to App to show the list of Brazil's states
@@ -134,6 +138,11 @@ censoApp.controller('ufsController', function($scope, $http) {
         $scope.parameters.estado = "";
         
     });
+
+    $scope.changeUF = function () {
+        console.log ("changeUF: " + $scope.parameters.estado);
+        $scope.$emit ("clearDataQuery", objParam);
+    }
 });
 
 //Add a controller to App to show the census's years
@@ -152,18 +161,19 @@ function listYears($scope, $rootScope, $http) {
             {codYear:'1970', year:'1970'}
         ]
     };
+    
     // função chamada toda vez q altera ano do cesnso
     $scope.changeCenso = function () {
-        console.log ("changeANO 1: " + $scope.parameters.ano)
+        console.log ("changeANO 1: " + $scope.parameters.ano);
         objTabela = $scope.parameters;
         objParam = {params:objTabela};
-        // Limpa a lsita de coleções (até descobrir como fazer isso no callFillTables)
-//        $rootScope.$broadcast ("callClearTables", objParam);
+
         // Preenche a lsita de coleções
         $rootScope.$broadcast ("callFillTables", objParam);
         // Preenche a lista de UFs de acordo com o ano
         $rootScope.$broadcast ("callFillUFs", objParam);
-
+        // Clear Data Query
+        $rootScope.$broadcast ("clearDataQuery", objParam);
     }
 };
 
@@ -188,6 +198,7 @@ function listTables($scope, $rootScope, $http) {
 //        console.log(objParam);
         console.log(objParam.params);
         $scope.$emit ("callFillVar", objParam);
+        $scope.$emit ("clearDataQuery", objParam);
     }
 
     $scope.$on ("callFillTables", function(event, data) {
@@ -252,6 +263,7 @@ function listTables($scope, $rootScope, $http) {
         $scope.parameters.tabela = "";
         objTabela = $scope.parameters;
         objParam = {params:objTabela};
+
         $scope.$emit ("callFillVar", objParam);
         /*
         $scope.$apply (function () {
