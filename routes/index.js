@@ -250,8 +250,6 @@ router.post('/queryMongo', function(req, res, next) {
 // get Censos (Years)
 router.get ('/year', function(req,res) {
   console.log ("RUN Get/year");
-  console.error ("RUN Get/year");
-  console.warn ("RUN Get/year");
   mongoClient.connect (cfg.MONGO_URL + "/"  + cfg.MONGO_DB_APP_CENSO + cfg.MONGO_URL_AUTH_DB, function (err,db) {
     assert.equal (err, null,"Erro-");
     console.log ('Connect to mongoDB (Get/Year) ' + cfg.MONGO_URL + "/" + cfg.MONGO_DB_APP_CENSO);
