@@ -1,7 +1,11 @@
+
 // The "censoApp" parameter refers to an HTML element in which the application will run.
 // The [] parameter in the module definition can be used to define dependent modules.
 // Without the [] parameter, you are not creating a new module, but retrieving an existing one.
 var censoApp = angular.module('censoApp',[]);
+
+var strCfgBD = "monet";
+//cfg = require ('../../parameters.js');
 
 // Module that contains the controllers used in the main app page index.html
 
@@ -19,7 +23,6 @@ censoApp.controller('censoController', ['$scope', '$http', function sendData($sc
     });
 
     // .success and .error methods are deprecated in Angular 1.6
-    
 }]);
 /* */
 
@@ -27,15 +30,18 @@ censoApp.controller('censoController', ['$scope', '$http', function sendData($sc
 censoApp.controller('submitController',['$scope', '$http', function ($scope, $http) {
     //$scope.data = {};
     $scope.parameters = {};
-    console.log('Chamou function submitController');
+    console.log('CensoApp: submitController');
 
     $scope.parameters.formatoDados = "csv-commas";
 
-    // submitQuery generate the sample file to be generated. Fills the variables field
-    // (/query POST request)
+    // submitQuery generate the sample file to be generated.
     $scope.submitQuery = function(){
-        console.log('clicked submit');
+        console.log('CensoApp.submitController: submit clicked -> submitQuery');
         console.log($scope.parameters);
+
+        // Consistência. Verifica Tipo de arquivo, Ano, Coleção e Variáveis (obrigatórios)
+        // Todo: Hierarquia
+        // Estado não é obrigatório.
         if ($scope.parameters.formatoDados == null || $scope.parameters.formatoDados == "") {
             alert("Favor selecionar um formato de dados");
             return;
@@ -45,21 +51,32 @@ censoApp.controller('submitController',['$scope', '$http', function ($scope, $ht
             return;
         }
 
+        // Atualiza informações na página principal
         $scope.msgConfirmaGera = "Para gerar o arquivo, clique em \"Gerar arquivo\"";
+        $scope.baixarArq = "";
+        $scope.texto = "";
+        $scope.dataQuery = {};
+        // Preenche dados do arquivo na tela
+        var strURL = "";
+        if (strCfgBD == 'monet') {
+            strURL = "/queryMonet";
+        } else {
+            strURL = "/queryMongo";
+        }
         $http({
             method: 'post',
-            url: '/query',
+            url: strURL,
             data: $scope.parameters
         }).then(function(httpResponse){
             // this callback will be called asynchronously
             // when the response is available
             $scope.dataQuery = httpResponse.data;
             //console.log(httpResponse.data);
-            console.log('Query executed successfully!!!!!!!');
+            console.log('Query executed successfully!!');
         }, function(httpResponse) {
             // called asynchronously if an error occurs
             // or server returns response with an error status.
-            $scope.msg = 'Erro na execução da Query :('; 
+            $scope.msg = 'Erro na execução da Query'; 
         });
     }
 
@@ -67,27 +84,33 @@ censoApp.controller('submitController',['$scope', '$http', function ($scope, $ht
     $scope.submitGeraArquivo = function() {
         console.log('clicked submit Gera Arquivo');
         console.log($scope.parameters);
+        // Atualiza informações na página principal
         $scope.msgConfirmaGera = "Gerando arquivo...";
         $scope.baixarArq = "";
+
+        var strChosenDB = '/files/geraArqMonet';
+        if (strCfgBD == "monet") {
+            strChosenDB = '/files/geraArqMonet';
+        } else {
+            strChosenDB = '/files/geraArqMongo';
+        }
+        
         $http({
             method: 'post',
-            url: '/files/geraArq',
+            url: strChosenDB,
             data: $scope.parameters
         }).then(function(httpResponse){
             // this callback will be called asynchronously
             // when the response is available
             var result = httpResponse.data;
-            console.log(result);
             var arrayX= JSON.parse (result)
-            console.log ("Arquivo: " + arrayX.file);
+            console.log ("Arquivo gerado! : " + arrayX.file);
+            // Arquivo gerado. Atualiza informações na tela.
             $scope.dataFile = httpResponse.data;
             $scope.baixarArq = "Baixar arquivo gerado.";
             $scope.texto = "Clique para download";
             $scope.msgConfirmaGera = "Arquivo gerado";
             $scope.fileLink = "files/download/?file=" + arrayX.file;
-            
-            console.log('Arquivo gerado!');
-            
         }, function(httpResponse) {
             // called asynchronously if an error occurs
             // or server returns response with an error status.
@@ -119,7 +142,7 @@ censoApp.controller('ufsController', function($scope, $http) {
             ufs: response.data
         };
      }, function myError(response) {
-        console.log('Error: ' + response.data);    
+        console.log('Error: ' + response.data);
     });
 
     $scope.$on ("callFillUFs", function(event, data) {
@@ -127,6 +150,7 @@ censoApp.controller('ufsController', function($scope, $http) {
 
         $http.get('/ufs', data)
         .then(function (response){        
+            //console.log (response.data);
             $scope.data = {
                 model: null,
                 ufs: response.data
@@ -151,6 +175,7 @@ censoApp.controller('yearsController',['$scope', '$rootScope', '$http', listYear
 function listYears($scope, $rootScope, $http) {
     //$scope.data = [];
     // Modificar para obter anos do BD
+    /*
     $scope.data = {
         model: null,
         years: [
@@ -161,10 +186,31 @@ function listYears($scope, $rootScope, $http) {
             {codYear:'1970', year:'1970'}
         ]
     };
+    */
+
+    $http.get('/year')
+    .then(function (response){
+        // build object to fill year combo
+        var objYear = [];
+        for (i = 0; i < response.data.length; i++) {
+            var elementYear = {};
+            elementYear.codYear = response.data [i]._id;
+            elementYear.year = response.data [i].year;
+            objYear.push (elementYear);
+        }
+        $scope.data = {
+            model: null,
+            years: objYear
+        };
+        // console.log ($scope.data.years);
+
+     }, function myError(response) {
+        console.log('YEAR Error: ' + response.data);    
+    });
     
     // função chamada toda vez q altera ano do cesnso
     $scope.changeCenso = function () {
-        console.log ("changeANO 1: " + $scope.parameters.ano);
+        console.log ("changeCenso: " + $scope.parameters.ano);
         objTabela = $scope.parameters;
         objParam = {params:objTabela};
 
@@ -178,24 +224,16 @@ function listYears($scope, $rootScope, $http) {
 };
 
 //Add a controller to App to show the census's tables
-censoApp.controller('tablesController',['$scope', '$http', '$rootScope', listTables]);
+censoApp.controller('tablesController', function ($scope, $rootScope, $http) {
 
-function listTables($scope, $rootScope, $http) {
     console.log ('Run tablesController');
-    /*
-    $scope.data = {
-        model: null,
-        tabelas: []
-    };
-    */
+
     $scope.data = [];
 
     $scope.updateVars = function () {
-        console.log ("Mudou coleção!!");
+        console.log ("Mudou coleção.");
         objTabela = $scope.parameters;
-//        console.log(objTabela);
         objParam = {params:objTabela};
-//        console.log(objParam);
         console.log(objParam.params);
         $scope.$emit ("callFillVar", objParam);
         $scope.$emit ("clearDataQuery", objParam);
@@ -203,8 +241,9 @@ function listTables($scope, $rootScope, $http) {
 
     $scope.$on ("callFillTables", function(event, data) {
         console.log ("on callFillTables: " + data.params.ano);
-        $scope.data = [];
         // Aqui vai ter que consultar no BD
+        /*
+        $scope.data = [];
 
         switch (data.params.ano) {
           case '2000':
@@ -255,15 +294,28 @@ function listTables($scope, $rootScope, $http) {
           default:
             break;
         }
+        */
 
-// NÃO TEM TABELA
-        //console.log ($scope.parameters.tabela);
+        
+        $scope.data = [];
 
+        $http.get ('/collection', data)
+        .then(function (response){
+            //console.log (response.data);
+            $scope.data = {
+                model: null,
+                colecoes: response.data
+            };
+        }, function myError(response) {
+            console.log('Error: ' + response.data);    
+        });
+        
+        
         // Associa vazio para apagar tabela que está selecionada!
         $scope.parameters.tabela = "";
         objTabela = $scope.parameters;
         objParam = {params:objTabela};
-
+        // Atualiza variáveis
         $scope.$emit ("callFillVar", objParam);
         /*
         $scope.$apply (function () {
@@ -272,7 +324,7 @@ function listTables($scope, $rootScope, $http) {
         */
         
     });
-};
+});
 
 //Add a controller to App to show the list of table's variable
 censoApp.controller('variaveisController', function($scope, $rootScope, $http) {
@@ -280,14 +332,11 @@ censoApp.controller('variaveisController', function($scope, $rootScope, $http) {
     // A função $http.get ('/variaveis') faz a solicitação,
     // então atribuimos o resultado a $scope.data
     console.log ('Run variaveisController');
-//    console.log ($rootScope.parameters);
-//    $scope.data: $scope.parameters
     console.log($scope.parameters);
-    console.log ('OK variaveisController');
 
-    chamVar = $http.get('/variaveis')
+    $http.get('/variaveis')
     .then(function (response){
-        console.log ('$http.get /variaveis');
+        // console.log (response.data);
         $scope.data = {
             model: null,
             variaveis: response.data
@@ -298,17 +347,22 @@ censoApp.controller('variaveisController', function($scope, $rootScope, $http) {
 
     $rootScope.$on ("callFillVar", function(event, data) {
         console.log ('on callFillVar');
-//        console.log ($scope.data);
-//        console.log (data);
-        // NÃO TEM data.params
-        //console.log ("callFillVar: " + data.params);
         $http.get('/variaveis', data)
         .then(function (response){
-//            console.log ('$http.get /callFillVar OK');
+            //$scope.data.variaveis = "";
+            if ($scope.data.variaveis[1] != null) {
+              console.log ($scope.data.item)
+            }
+            
+            // console.log ('CallFillVar: $http.get /variaveis');
+            // console.log (response.data);
+            
             $scope.data = {
                 model: null,
                 variaveis: response.data
             };
+            $scope.data.selected = 0;
+            
         }, function myError(response) {
             console.log('Error ($http.get /callFillVar): ' + response.data);    
         });
@@ -316,3 +370,6 @@ censoApp.controller('variaveisController', function($scope, $rootScope, $http) {
 
 });
 
+
+/********* ***********************************************************************/
+/********* ***********************************************************************/

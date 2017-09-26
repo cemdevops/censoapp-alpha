@@ -11,15 +11,10 @@
       <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">            
       <link rel='stylesheet' href='/stylesheets/style.css'/>
    </head>
-   <!-- ******************************** -->
-   <!-- ng-controller = submitController -->
-   <!-- ******************************** -->
 
    <script type="text/javascript">
       function disableGera () {
-         // document.getElementById("btnConfSolic").disabled = true;
          document.getElementById("btnGeraArq").disabled = true;
-//         document.getElementById("msgConfGera").innerHTML = "Gerando arquivo...";
          document.getElementById("arqGerado").style.display = "inline-block";
       }
 
@@ -33,16 +28,8 @@
       }
 
       function changeCenso () {
-         // document.getElementById("btnConfSolic").disabled = true;
-  //       alert(document.getElementById("colecao").selectedIndex);
-        // document.getElementById("colecao").selectedIndex = 0;
          document.getElementById("colecao").selectedIndex = 0;
-//         document.getElementById("colecao").value = "selecione";
          document.getElementById("estado").selectedIndex = 0;
- //        document.getElementById("arqGerado").style.display = "none";
-//         document.getElementById("colecao").innerHTML = "Para gerar o arquivo";
-//         document.getElementById("ano").options [0] = selected;
-//         document.getElementById("msgConfGera").innerHTML = "Para gerar o arquivo, clique em \"Gerar arquivo\"";
         initGera ();
       }
 
@@ -54,6 +41,11 @@
         initGera ();
       }
    </script>
+
+   <!-- ******************************** -->
+   <!-- ng-controller = submitController -->
+   <!-- ******************************** -->
+   
    <body class="container" ng-app="censoApp" ng-controller="submitController">
       <div class="page-header">
          <h2>Plataforma de Consultas de dados censitários</h2>
@@ -70,10 +62,10 @@
                   
                   <div class="radio">
                      <label class="radio-inline">
-                        <input id = "radioCSVComma" type="radio" name="formatoDados" ng-model="parameters.formatoDados" value="csv-commas" checked="checked">CSV delimitado por vírgulas
+                        <input id = "radioCSVComma" type="radio" name="formatoDados" ng-model="parameters.formatoDados" value="csv-commas" checked="checked">CSV delimitado por vírgula
                      </label><br>
                      <label class="radio-inline">
-                        <input id = "radioSemicolon" type="radio" name="formatoDados" ng-model="parameters.formatoDados" value="csv-semicolon" disabled>CSV delimitado por pontos e vírgulas
+                        <input id = "radioSemicolon" type="radio" name="formatoDados" ng-model="parameters.formatoDados" value="csv-semicolon">CSV delimitado por ponto e vírgula
                      </label>
                   </div>
                </div>
@@ -84,11 +76,11 @@
                   <div class="radio">
                      <label class="radio-inline">
                         <input type="radio" name="estruturaDados" ng-model="parameters.estruturaDados" value="rectangular" checked>Rectangular (Pessoa)
-                     </label>  
+                     </label>
                   
                      <label class="radio-inline">
                         <input type="radio" name="estruturaDados" ng-model="parameters.estruturaDados" value="hierarquico">Hierárquico (Domicilio)
-                     </label>  
+                     </label>
                   </div>
                </div>
 
@@ -101,7 +93,7 @@
                      <br>
                      <select id="ano" name="ano" class="form-control" onchange="changeCenso()" ng-model="parameters.ano" ng-change="changeCenso()">
                         <option value="">Selecione um ano</option>
-                        <option value="{{item.codYear}}" ng-repeat="item in data.years">{{item.year}}</option>
+                        <option value="{{item.year}}" ng-repeat="item in data.years">{{item.year}}</option>
                      </select>
                   </div>
 
@@ -114,7 +106,7 @@
                      <br>
                      <select id="colecao" name="colecao" class="form-control" onchange="changeCollection()" ng-model="parameters.tabela" ng-change="updateVars()">
                         <option value="">Selecione uma coleção</option>
-                        <option value="{{item.codTabela}}" ng-repeat="item in data.tabelas">{{item.tabela}}</option>                     
+                        <option value="{{item.value}}" ng-repeat="item in data.colecoes">{{item.label}}</option>
                      </select>
                   </div>
               
@@ -137,10 +129,10 @@
                <!-- *********************************** -->
                <div class="form-group" ng-controller="variaveisController">
                   <br><br>
-                  <label for="{{item.codvar}}">Selecione as variáveis que deseja incluir na consulta:</label>
+                  <label for="{{item.varCode}}">Variáveis da coleção:</label>
                   <br>
-                  <select multiple id="{{item.codVar}}" name="variaveis[]" class="form-control" size="13" ng-model="parameters.variaveis">
-                     <option value="{{item.codVar}}" ng-repeat="item in data.variaveis">[{{item.codVar}}] {{item.Description}}</option>                 
+                  <select multiple id="variavel" name="variaveis[]" class="form-control" size="13" ng-model="parameters.variaveis">
+                     <option value="{{item.varCode}}" ng-repeat="item in data.variaveis">[{{item.varCode}}] {{item.label}}</option>                 
                   </select>
                </div>
 <!--
@@ -161,14 +153,10 @@
             </form>
                <div>
                <form>
-                  <!--<input type="text" ng-model="parameters.textoTeste">-->                  
                   <label for="submitBtn">Confirmação e geração de arquivo: </label> <br> 
                   <input id="btnConfSolic" class="btn btn-primary" type="submit" value="Confirmar solicitação" ng-click="submitQuery()" onclick="EnableGera()">
                   
                   <input id="btnGeraArq" class="btn btn-primary" type="submit" value="Gerar arquivo" ng-click="submitGeraArquivo()" disabled=""  onclick="disableGera()">
-                  <!--
-                  <p id="msgConfGera" class="help-block">Confirme e solicitação para ver abaixo um exemplo do dados do arquivo.</p>
-                  -->
                   <p id="msgConfGera" class="help-block">{{msgConfirmaGera}}</p>
                   <div id="arqGerado" style="display: none">{{baixarArq}}
                     <a href="{{fileLink}}" download> {{texto}}
@@ -183,7 +171,7 @@
             <legend>Dados do arquivo</legend>
             <!-- Add a controller to application -->
             <div class="table-responsive">
-              <table = class="table table-bordered table-hover table-striped">
+              <table class="table table-bordered table-hover table-striped" style="width:100%; font-size: 13">
                <thead>
                  <tr>
                     <th ng-repeat="(key, val) in dataQuery[0]">{{key}}</th>
@@ -203,29 +191,33 @@
 
       </div>
       <!-- End of Parameters panel -->
-
-      <!-- Panel: Samples-->
-      <!-- Samples of CSV file content-->
-
       <!--
-      <div class="panel panel-default">
-         <div class="panel-body">
-           <fieldset>
-            <legend>Conteúdo arquivo CSV</legend>
-            <div >
-              <table>
-                 <tr>
-                    <th ng-repeat="(key, val) in dataQuery[0]">{{key}}</th>
-                 </tr>
-                 <tr ng-repeat="item in dataQuery">
-                    <td ng-repeat="(key, val) in item">{{val}}</td>
-                 </tr>
-              </table>
-            </div>
-           </fieldset>
-         </div>
-      </div>
       -->
+      <!-- MODAL... -->
+      <div id="GSCCModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"  ng-controller="variaveisController">
+      <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;  </button>
+              <h4 class="modal-title" id="myModalLabel">Filtro de variáveis</h4>
+            </div>
+            <div class="modal-body">
+              Variáveis {{parameters.tabela}}<br>
+                        <label for="{{item.varCode}}">Selecione as variáveis que deseja incluir na consulta:</label>
+                        <br>
+                        <select multiple id="{{item.varCode}}" name="variaveis[]" class="form-control" size="13" ng-model="parameters.variaveis">
+                          <option value="{{item.varCode}}" ng-repeat="item in data.variaveis">[{{item.varCode}}] {{item.label}}</option>                 
+                        </select>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+              <button type="button" class="btn btn-primary">Confirmar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- ...MODAL -->
 
    </body>
+   
 </html>

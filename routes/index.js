@@ -1,224 +1,380 @@
+var cfg = require ('../parameters.js');
 var express = require('express');
 var router = express.Router();
 var path = require('path');
-//var MDB = require('monetdb')();
 var mongoClient = require('mongodb').MongoClient;
 var assert = require ('assert');
 var dboper = require ('../public/javascripts/operMongo');
-//var mongotocsv = require ('mongo-to-csv');
-//var fs = require('fs');
-//var url = require('url');
+var utils = require ('../public/javascripts/utils');
 
-// create a variable to connect to Mongo
-// db c2010 possui uma quantidade menor de registros
-//var urlAppMongo = 'mongodb://172.16.1.94:27017/c2010';
-var urlMongo = 'mongodb://172.16.1.94:27017';
-var strAppMongo = "appMongo";
-var strCensoDB = "c2010";
+// Clóvis - monet...
+var MDB = require('monetdb')();
+// ...Clóvis - monet
 
 // Código responsável para renderizar e redirecionar ao 
 // arquivo angularjs index.html
-
-/* GET home page. */
+// GET home page
 router.get('/', function(req, res, next) {
   res.sendFile(path.join(__dirname, '../', 'views', 'index.html'));
 });
 module.exports = router;
 
-/* GET /resultadoQuery */
+/* GET /resultadoQuery - Monet */
 // From "onSubmit": Visualization of file data (10 records)
-router.post('/query', function(req, res, next) {
-   console.log("POST/QUERY: ");
+router.post('/queryMonet', function(req, res, next) {
+  console.log ("RUN Post/queryMONET. Parameters:");
+  console.log (req.body);
 
   var strCollection = "";
-  console.log("Tabela: " + req.body.tabela);
-
-  switch (req.body.tabela) {
-    case "emigracao": strCollection  = 'tEmi';
-      break;
-    case "domicilio": strCollection  = 'tDom';
-      break;
-    case "pessoa": strCollection  = 'tPes';
-      break;
-    case "mortalidade": strCollection  = 'tMor';
-      break;
-    case "geral": strCollection  = 'tGer';
-      break;
-    default: strCollection  = 'default';
-      console.log("Sem tab");
-      break;
+  var intAno = 0;
+  var strFields = "[";
+  
+  // Consistências. Ano, tabela e variáveis.
+  if ((req.body.ano == null) || (req.body.ano == "")) {
+    console.log ("Post/query: ano não preenchido. Vai retornar!");
+    res.json ("");
+    return;
+  } else {
+    // get ano
+    intAno = parseInt (req.body.ano);
   }
 
-   console.log('nomeColecao: ' + strCollection);
+  // Consistências. Ano, tabela e variáveis.
+  if ((req.body.tabela == null) || (req.body.tabela == "")) {
+    console.log ("Post/query: tabela não preenchida. Vai retornar!");
+    res.json ("");
+    return;
+  } else {
+    // get tabela
+    strCollection = req.body.tabela;
+  }
 
-   // nome do estado
-   var codEstado = req.body.estado;
-
-   var strFields = "{";
-
-   console.log('COD-ESTADO: ' + codEstado);
-   if (req.body.variaveis) {
-//     console.log ('Variável existe')
-//     console.log ('TAM VARIAVEIS: ' + req.body.variaveis.length);
-//     console.log ('VARIAVEIS: ' + req.body.variaveis);
-     for (i = 0; i < req.body.variaveis.length; i++) {
-       if (i > 0) {
-         strFields += ",";
-       }
-       strFields += '"' + req.body.variaveis[i] + '":1'
-     }
-   } else {
-     console.log ('Variável NÃO existe')
-   }
-   strFields += "}";
-   console.log ('Projection: ' + strFields);
-
-   // Por enquanto hard coded sobre 1991, 2000 e 2010. Alterar para genérico.
-   if (req.body.ano == 2000) {
-     strCensoDB = "c2000";
-   } else if (req.body.ano == 2010) {
-     strCensoDB = "c2010";
-   } else if (req.body.ano == 1991) {
-     strCensoDB = "c1991";
-   } else if (req.body.ano == 1980) {
-     strCensoDB = "c1980";
-   } else if (req.body.ano == 1970) {
-     strCensoDB = "c1970";
-   } else {
-     strCensoDB = "censo"
-   }
-   console.log ('CENSO: ' + req.body.ano + "-" + strCensoDB);
-
-   strQuery = "{}";
-
-  if (req.body.estado) {
-    var varEstado = "";
-    switch (req.body.ano) {
-      case "2010": varEstado  = "V0001";
-        break;
-      case "2000": varEstado  = "V0102";
-        break;
-      case "1991": varEstado  = "VAR1101";
-        break;
-      case "1980": varEstado  = "V2";
-        break;
-      case "1970": varEstado  = "V055";
-        break;
-      default: varEstado  = "V0001";
-        console.log("Sem Estado");
-        break;
+  // Consistências. Ano, tabela e variáveis.
+  if ((req.body.variaveis == null) || (req.body.variaveis.length < 1)) {
+    console.log ("Post/query: variáveis não selecionadas. Vai retornar!");
+    res.json ("");
+    return;
+  } else {
+    // Filtra campos.
+    for (i = 0; i < req.body.variaveis.length; i++) {
+      if (i > 0) {
+        strFields += ",";
+      }
+      strFields += '"' + req.body.variaveis[i] + '"';
     }
-    strQuery = "{\"" + varEstado + "\":" + req.body.estado + "}"
+    strFields += "]";
   }
 
-  console.log ("BD: " + strCensoDB + " | Col: " + strCollection + " | Query: " + strQuery + " | Fields: " + strFields);
-  mongoClient.connect (urlMongo + "/" + strCensoDB, function (err,db) {
-    assert.equal (err, null);
-    // urlAppMongo = 'mongodb://localhost:27017/appMongo';
-    dboper.findDocuments (db, strCollection, JSON.parse(strQuery), JSON.parse(strFields), 10, function (result) {
-      console.log("Post /query OK!");
-      res.json(result);
-      db.close();
-    })
-  })
+  // Clóvis monet ...
+  var strSchemaMonet = utils.obtemSchemaMonet (req.body.ano);
+  var arrayFields = JSON.parse (strFields);
+  
+  var strSQLSelect = "SELECT " + arrayFields + " FROM ";
+  var strMonetVars = "";
+  for (i = 0; i < arrayFields.length; i++) {
+    if (i == 0) {
+      strMonetVars = "SELECT \'" + arrayFields [i].replace ("VAR","V") + "\'";
+      strSQLSelect = "SELECT " + arrayFields [i].replace ("VAR","V");
+    } else {
+      strMonetVars += ",\'" + arrayFields [i].replace ("VAR","V") + "\'";
+      strSQLSelect += "," + arrayFields [i].replace ("VAR","V");
+    }
+  }
+  strMonetVars += " UNION ALL ";
+  strSQLSelect += " FROM ";
+
+  if (cfg.DB_SERVER == "internuvem") {
+    strSQLSelect += strSchemaMonet + "." + strCollection;
+  } else {
+    if (strCollection == "tDom") {
+      strSQLSelect += "domicilio"
+    } else {
+      strSQLSelect += "pessoa"
+    }
+  }
+  // ...Clóvis monet
+
+  // Filtro de estado, se houver.
+  var strSQLWhere = "";
+  if (req.body.estado) {
+    var varEstado = utils.obtemVarEstado (req.body.ano);
+    strSQLWhere = " WHERE " + varEstado.replace ("VAR","V") + "=" + req.body.estado;
+  }
+  
+  var dbAtual = cfg.DB_INIC;
+
+  if (dbAtual == "monet") {
+    // monet
+    // var strQueryMonet = strMonetVars + strSQLSelect + strSQLWhere + " LIMIT 10";
+    var strQueryMonet = strSQLSelect + strSQLWhere + " LIMIT 10";
+    console.log ("QUERY/MONETDB: SQL ==> " + strQueryMonet);
+    var strDBMonet = "censodb";
+
+    // create a variable to connect to MonetDB
+    var optionsMonet = {
+      host  : cfg.MONET_DB_HOST,
+      port  : cfg.MONET_DB_PORT,
+      dbname: strDBMonet,
+      user  : cfg.MONET_DB_USER,
+      password: cfg.MONET_DB_USER,
+      language: 'sql',
+      prettyResult: true, // the query result will be JSON   
+      debug: false,      // Whether or not to log general debug messages
+      debugMapi: false,  // Whether or not to show the Mapi messages that
+          // are being sent back and forth between 
+          // the MonetDB NodeJS module and the MonetDB server
+      testing: false     // When set True, some additional (undocumented) methods 
+          // will be  exposed, e.g. to simulate socket failures                     
+    };
+
+    console.log ("MONET OPTION");
+    console.log (optionsMonet);
+
+    var conn = new MDB(optionsMonet);
+    conn.connect();
+    conn.query(strQueryMonet)
+    .then(function(result) {
+      console.log('MONET OK: execution succesful!!');      
+      // console.log(result.data);
+      res.json(result.data);
+      conn.close();
+    }, function(err){
+      //Handle error here
+      console.error("MONET ERRO! ==> " + err);
+      res.json("");
+      conn.close();
+    });
+
+  } else {
+    // mongo
+    // Consulta nome coleção e consulta definida.
+    console.log ("BD: " + cfg.MONGO_DB_APP_CENSO + " | Col: " + strCollection + " | Query: " + strQuery + " | Fields: " + strFields);
+    console.log ("Função errada para query mongo!");
+  }
 });
 
+/* GET /resultadoQuery - Mongo */
+// From "onSubmit": Visualization of file data (10 records)
+router.post('/queryMongo', function(req, res, next) {
+  console.log ("RUN Post/queryMONGO. Parameters:");
+  console.log (req.body);
 
-// Selecionar os campos escolhidos 
-function selectFields(camposSelecionados){
-   var query;
-   query = 'SELECT * ';//+ camposSelecionados;
-   return query;
-}
-
-// Selecionar o modelo correspondente a uma colecao 
-function selectTable(nomeColecao){
-   var query;
-   query = ' FROM '+ nomeColecao;
-   return query;
-}
-
-/*// Filter a query by 'where'
-function filterByWhere(limit){
-   var query;
-   query = '   WHERE '+ limit;
-   return query;
-}*/
-
-// Selecionar o modelo correspondente a uma colecao 
-function defineLimit(limit){
-   var query;
-   query = ' LIMIT '+ limit;
-   return query;
-}
-
-
-// get the information of UF Collections
-router.get ('/ufs', function(req,res) {
-
-  console.log ("GET/UFS ANO=: " + req.query.ano)
-  var strCollection = 'uf';
-  // Mudar para appMongo, qdo carregar UFs.
-  if (req.query.ano == 2010) {
-    strCensoDB = "c2010";
-  } else if (req.query.ano == 2000) {
-    strCensoDB = "c2010";
-  } else if (req.query.ano == 1991) {
-    strCensoDB = "c1991";
-  } else if (req.query.ano == 1980) {
-    strCensoDB = "c1980";
-  } else if (req.query.ano == 1970) {
-    strCensoDB = "c1970";
+  var strCollection = "";
+  var intAno = 0;
+  var strFields = "{";
+  //var strFields2 = "[";
+  
+  // Consistências. Ano, tabela e variáveis.
+  if ((req.body.ano == null) || (req.body.ano == "")) {
+    console.log ("Post/query: ano não preenchido. Vai retornar!");
+    res.json ("");
+    return;
   } else {
-    strCensoDB = "";
+    // get ano
+    intAno = parseInt (req.body.ano);
   }
 
-  mongoClient.connect (urlMongo + "/" + strCensoDB, function (err,db) {
-    assert.equal (err, null);
-    console.log ('Connect to mongoDB (Get/ufs) ' + urlMongo + "/" + strCensoDB);
-    dboper.findDocuments (db, strCollection, {}, {}, 0, function (result) {
-      res.json(result);
+  // Consistências. Ano, tabela e variáveis.
+  if ((req.body.tabela == null) || (req.body.tabela == "")) {
+    console.log ("Post/query: tabela não preenchida. Vai retornar!");
+    res.json ("");
+    return;
+  } else {
+    // get tabela
+    strCollection = req.body.tabela;
+  }
+
+  // Consistências. Ano, tabela e variáveis.
+  if ((req.body.variaveis == null) || (req.body.variaveis.length < 1)) {
+    console.log ("Post/query: variáveis não selecionadas. Vai retornar!");
+    res.json ("");
+    return;
+  } else {
+    // Filtra campos.
+    for (i = 0; i < req.body.variaveis.length; i++) {
+      if (i > 0) {
+        strFields += ",";
+        //strFields2 += ",";
+      }
+      strFields += '"' + req.body.variaveis[i] + '":1'
+      //strFields2 += '"' + req.body.variaveis[i] + '"';
+    }
+    strFields += "}";
+    //strFields2 += "]";
+  }
+
+  // Filtro de estado, se houver.
+  strQuery = "{}";
+  if (req.body.estado) {
+    var varEstado = utils.obtemVarEstado (req.body.ano);
+    strQuery = "{\"" + varEstado + "\":" + req.body.estado + "}"
+  }
+  
+  var dbAtual = cfg.DB_INIC;
+  if (dbAtual == "monet") {
+    // monet
+    console.log ("Função errada para consulta monet!");
+  } else {
+    // mongo
+    // Consulta nome coleção e consulta definida.
+    console.log ("BD: " + cfg.MONGO_DB_APP_CENSO + " | Col: " + strCollection + " | Query: " + strQuery + " | Fields: " + strFields);
+      mongoClient.connect (cfg.MONGO_URL + "/" + cfg.MONGO_DB_APP_CENSO + cfg.MONGO_URL_AUTH_DB, function (err,db) {
+      assert.equal (err, null);
+      console.log ('Connect to mongoDB (Post/query) ' + cfg.MONGO_URL + "/" + cfg.MONGO_DB_APP_CENSO);
+      var strQueryYear = "{\"year\":" + intAno + "}";
+      var strFieldDbName = "{\"year\":1,\"dbName\":1}";
+      // Obtém nome da coleção, de acordo com ano.
+      dboper.findDocuments (db, cfg.MONGO_DB_GERAL, JSON.parse (strQueryYear), JSON.parse (strFieldDbName), 0, function (result) {
+        if (result.length > 0) {
+          console.log (result[0].dbName);
+
+          mongoClient.connect (cfg.MONGO_URL + "/" + result[0].dbName + cfg.MONGO_URL_AUTH_DB, function (err,db) {
+            assert.equal (err, null);
+            console.log ('Connect to mongoDB (Post/query) ' + cfg.MONGO_URL + "/" + result[0].dbName);
+            // Consulta escolhida.
+            dboper.findDocuments (db, strCollection, JSON.parse(strQuery), JSON.parse(strFields), 10, function (result) {
+              res.json(result);
+              db.close();
+            })
+          })
+        } else {
+          console.log ("Não encontrou coleção. Retorna");
+          res.json("");
+        }
+      });
+    });
+
+  }
+});
+
+// get Censos (Years)
+router.get ('/year', function(req,res) {
+  console.log ("RUN Get/year");
+  console.error ("RUN Get/year");
+  console.warn ("RUN Get/year");
+  mongoClient.connect (cfg.MONGO_URL + "/"  + cfg.MONGO_DB_APP_CENSO + cfg.MONGO_URL_AUTH_DB, function (err,db) {
+    assert.equal (err, null,"Erro-");
+    console.log ('Connect to mongoDB (Get/Year) ' + cfg.MONGO_URL + "/" + cfg.MONGO_DB_APP_CENSO);
+    var strFields = "{\"year\":1}";
+    dboper.findDocuments (db, cfg.MONGO_DB_GERAL, {available:1}, JSON.parse (strFields), 0, function (result) {
+      // console.log ("result: " + result)
+      res.json (result);
     })
-  })
+  });
+});
+
+// get collections
+router.get ('/collection', function(req,res) {
+  console.log ("RUN Get/collection. Parameters:");
+  console.log (req.body);
+  if (req.query.ano == null) {
+    console.log ("Get/collection: ano não preenchido. Vai retornar!");
+    res.json ("");
+    return;
+  }
+
+  mongoClient.connect (cfg.MONGO_URL + "/" + cfg.MONGO_DB_APP_CENSO + cfg.MONGO_URL_AUTH_DB, function (err,db) {
+    assert.equal (err, null);
+    console.log ('Connect to mongoDB (Get/Collection) ' + cfg.MONGO_URL + "/" + cfg.MONGO_DB_APP_CENSO);
+    // Filtro por ano
+    var strQuery = "{\"year\":" + req.query.ano + "}"; //,avaiable:{$ne:0}}";
+    // Campos: value e label
+    var strFields = "{\"collection.value\":1,\"collection.label\":1}";
+    var strSource = "censo";
+    var resArray = [];
+    // Realiza consulta
+    dboper.aggregDocumentCollections (db, cfg.MONGO_DB_GERAL, strSource, req.query.ano, "strColl", 0, function (result) {
+      console.log (result.length);
+      if (result.length > 0) {
+        // Retornou resultado
+        for (i = 0; i < result.length; i++) {
+          resArray.push (result[i].collection)
+        }
+        res.json (resArray);
+      } else {
+        // Sem resultados. Retorna vazio.
+        res.json ("");
+      }
+    })
+  });
+});
+
+// get information of UF
+router.get ('/ufs', function(req,res) {
+  console.log ("RUN Get/ufs. Parameters:");
+  console.log (req.body);
+  // Consitências.
+  if ((req.query.ano == null) || (req.query.ano == "")) {
+    console.log ("Get/UFS: ano não preenchido. Vai retornar!");
+    res.json ("");
+    return;
+  }
+
+  var strCollection = 'uf';
+
+    mongoClient.connect (cfg.MONGO_URL + "/" + cfg.MONGO_DB_APP_CENSO + cfg.MONGO_URL_AUTH_DB, function (err,db) {
+    assert.equal (err, null);
+    console.log ('Connect to mongoDB (Get/UFS - TST) ' + cfg.MONGO_URL + "/" + cfg.MONGO_DB_APP_CENSO);
+    var strQuery = "{\"year\":" + req.query.ano + "}";
+    var strFields = "{\"year\":1,\"dbName\":1}";
+    dboper.findDocuments (db, cfg.MONGO_DB_GERAL, JSON.parse (strQuery), JSON.parse (strFields), 0, function (result) {
+      if (result.length > 0) {
+        //console.log (result);
+        //console.log (result[0].dbName);
+        mongoClient.connect (cfg.MONGO_URL + "/" + result[0].dbName + cfg.MONGO_URL_AUTH_DB, function (err,db) {
+          assert.equal (err, null);
+          console.log ('Connect to mongoDB (Get/ufs) ' + cfg.MONGO_URL + "/" + result[0].dbName);
+          dboper.findDocuments (db, strCollection, {}, {}, 0, function (result) {
+            res.json(result);
+          })
+        });
+      } else {
+        console.log ("result 0");
+        res.json("");
+      }
+    });
+  });
 });
 
 // get information of variables
 router.get('/variaveis', function(req,res){
-
-  console.log("GET/VARIAVEIS Parameters:");
+  console.log("RUN Get/variaveis Parameters: ");
   console.log(req.query);
-  console.log("GET/VARIAVEIS Parameters TABELA=:" + req.query.tabela);
 
   var strCollection = "";
+  var intAno = 0;
 
-  console.log("Tabela: " + req.query.tabela);
-  switch (req.query.tabela) {
-    case "emigracao": strCollection  = 'schemaEmi';
-      break;
-    case "domicilio": strCollection  = 'schemaDom';
-      break;
-    case "pessoa": strCollection  = 'schemaPes';
-      break;
-    case "mortalidade": strCollection  = 'schemaMor';
-      break;
-    case "geral": strCollection  = 'schemaGer';
-      break;
-    default: strCollection  = 'default';
-      console.log("Sem tab");
-      break;
+  // Consistências. Ano e tabela.
+  if ((req.query.ano == null) || (req.query.ano == "")) {
+    console.log ("Get/variáveis: ano não preenchido. Vai retornar!");
+    res.json ("");
+    return;
+  } else {
+    intAno = parseInt (req.query.ano);
   }
 
-  // Tem que fazer a consulta pq sem tabela, vai preencher com vaxzio, apagando o que existe
-  strCollection = strCollection + req.query.ano;
-  //strCollection = strCollection + ano;
-  console.log ("strCollection =" + strCollection)
+  if ((req.query.tabela == null) || (req.query.tabela == "")) {
+    console.log ("Get/variáveis: tabela não preenchida. Vai retornar!");
+    res.json ("");
+    return;
+  } else {
+    strCollection = req.query.tabela;
+  }
 
-  mongoClient.connect (urlMongo + "/" + strAppMongo, function (err,db) {
+  console.log ("strCollection =" + strCollection)
+  mongoClient.connect (cfg.MONGO_URL + "/" + cfg.MONGO_DB_APP_CENSO + cfg.MONGO_URL_AUTH_DB, function (err,db) {
     assert.equal (err, null);
-    strFiltro = {showInPage:{$gt:0}};
-    console.log ('Connect to mongoDB (Get/Variaveis) ' + urlMongo + "/" + strAppMongo + ". TAB=" + strCollection);
-    dboper.findDocuments (db, strCollection, strFiltro, {}, 0, function (result) {
-      res.json(result);
+    console.log ('Connect to mongoDB (Get/Variáveis) ' + cfg.MONGO_URL + "/" + cfg.MONGO_DB_APP_CENSO);
+    //dboper.findDistinctField (db, "year", "tGeral", function (result) {
+    dboper.aggregDocument (db, cfg.MONGO_DB_GERAL, "censo", intAno, strCollection, function (result) {
+      console.log ("Tam: " + result.length);
+      if (result.length > 0) {
+        // Obteve resultado. Retorna.
+        res.json (result[0].collection.variable);
+      } else {
+        // Sem resultados. Retorna vazio.
+        res.json ("");
+      }
     })
-  })
+  });
 });
