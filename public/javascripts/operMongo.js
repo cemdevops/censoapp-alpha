@@ -45,3 +45,66 @@ exports.findDocuments = function (db, strCollection, conditions, fields, intLimi
     callback (docs);
   });
 }
+
+exports.findDistinctField = function (db, field, collection, callback) {
+  var coll = db.collection (collection);
+  coll.distinct (field, function (err, result) {
+    assert.equal (err, null);
+    console.log ("Find distinct: " + field + ' em ' + collection);
+    callback (result);
+  });
+}
+
+exports.aggregDocument = function (db, collection, strSource, intYear, strColl, callback) {
+  var coll = db.collection (collection);
+
+  coll.aggregate (
+    [
+      {$match:{source:strSource,year:intYear}},
+      {$unwind:"$collection"},
+      {$match:{"collection.value":strColl}},
+      {$project:{"collection.variable.varCode":1,"collection.variable.label":1}}
+    ], function (err, result) {
+    assert.equal (err, null);
+    console.log ("Aggregation : " + intYear + ' em ' + strColl);
+    callback (result);
+  });
+}
+
+exports.aggregDocumentCollections = function (db, collection, strSource, intYear, strColl, intAvail, callback) {
+  var coll = db.collection (collection);
+
+  var strYear = "" + intYear + "";
+
+  coll.aggregate (
+    [
+      {$match:{source:strSource, year: parseInt (intYear, 10)}},
+      {$unwind:"$collection"},
+      {$match:{"collection.available":{$ne:intAvail}}},
+      {$project:{"collection.value":1,"collection.label":1}}
+    ], function (err, result) {
+    assert.equal (err, null);
+    console.log ("Aggregation : " + intYear + ' em ' + strColl);
+    // console.log (result)
+    callback (result);
+  });
+}
+
+/*
+exports.schemaGetCollections = function (db, collection, strSource, intYear, strColl, callback) {
+  var coll = db.collection (collection);
+  console.log ("AGGREG");
+
+  coll.aggregate (
+    [
+      {$match:{source:strSource,year:intYear}},
+      {$unwind:"$collection"},
+      {$match:{"collection.value":strColl}},
+      {$project:{"collection.variable.varCode":1,"collection.variable.label":1}}
+    ], function (err, result) {
+    assert.equal (err, null);
+    console.log ("Aggregation : " + intYear + ' em ' + strColl);
+    callback (result);
+  });
+}
+*/

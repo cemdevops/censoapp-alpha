@@ -6,7 +6,7 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-
+require('console-stamp')(console, 'dd/mm/yy HH:MM:ss');
 
 var index = require('./routes/index');
 var users = require('./routes/users');
