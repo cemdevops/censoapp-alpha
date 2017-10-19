@@ -7,10 +7,8 @@ var assert = require ('assert');
 var dboper = require ('../public/javascripts/operMongo');
 var utils = require ('../public/javascripts/utils');
 var url = require('url');
-
-// Clóvis - monet...
+// Monetdb
 var MDB = require('monetdb')();
-// ...Clóvis - monet
 
 // GET users listing
 router.get('/', function(req, res, next) {
@@ -72,23 +70,7 @@ router.post('/geraArq', function(req, res, next) {
   // Filter by state only if there is a selected one
   if ((req.body.estado != null) && (req.body.estado != "")) {
     var varEstado = utils.obtemVarEstado (req.body.ano);
-    /*
-    switch (req.body.ano) {
-      case "2010": varEstado  = "V0001";
-        break;
-      case "2000": varEstado  = "V0102";
-        break;
-      case "1991": varEstado  = "VAR1101";
-        break;
-      case "1980": varEstado  = "V2";
-        break;
-      case "1970": varEstado  = "V055";
-        break;
-      default: varEstado  = "V0001";
-        console.log("Sem Estado");
-        break;
-    }
-    */
+
     strOptions += " --query {" + varEstado + ":" + req.body.estado + "}"
     console.log ("Options: " + strOptions);
   }
@@ -142,22 +124,10 @@ router.post('/geraArq', function(req, res, next) {
  */
 router.get('/download', function(req,res){
 
-  var url_parts = url.parse(req.url,true);
-  console.log("Vai iniciar Download! url_parts:");
-  console.log("Dir name: " + __dirname);
-  console.log(req.query.file);
-  //var jsonf = JSON.stringify(req);
-
-  // Teste de geração de arquivo
-  /*
-  fs.writeFile("./output/test.txt", req, function(err) {
-      if(err) {
-          return console.log(err);
-      }
-
-      console.log("The file was saved!");
-  });
-  */
+  //var url_parts = url.parse(req.url,true);
+  //console.log("Vai iniciar Download! url_parts:");
+  //console.log("Dir name: " + __dirname);
+  //console.log(req.query.file);
 
   if (cfg.DB_SERVER == "internuvem") {
     var file = cfg.MONET_DB_OUTPUT_FOLDER + req.query.file;
@@ -165,10 +135,9 @@ router.get('/download', function(req,res){
     var file = "./output/" + req.query.file;
   }
   
-//  console.log("File (1): " + file);
-//  file = '/home/clovis/censomnpmexpcsv/output/teste.csv';
-
-  console.log("File: " + file);
+  console.log("---------------");
+  console.log("--> Vai iniciar Download! File:" + file);
+  console.log("---------------");
 
   res.download (file, "download.csv", function (err) {
       if (err) {
@@ -229,96 +198,22 @@ router.post('/geraArqMonet', function(req, res, next) {
     strDataFormat = req.body.formatoDados;
   }
 
-  if ((req.body.variaveis == null) || (req.body.variaveis.length < 1)) {
+  if ((req.body.selectedVariables == null) || (req.body.selectedVariables.length < 1)) {
     console.log ("Post/geraArq: variáveis não selecionadas. Vai retornar!");
     res.json ("");
     return;
   } else {
     // Filtra campos.
-    for (i = 0; i < req.body.variaveis.length; i++) {
+    for (i = 0; i < req.body.selectedVariables.length; i++) {
       if (i > 0) {
         strFields += ",";
       }
-      strFields += '"' + req.body.variaveis[i] + '"';
+      strFields += '"' + req.body.selectedVariables[i].varCode + '"';
     }
     strFields += "]";
   }
-
-  console.log ("strFields: " + strFields);
-  var arrayFields = JSON.parse (strFields);
-
-  var strSchemaMonet = utils.obtemSchemaMonet (req.body.ano);
-  /*
-  switch (req.body.ano) {
-    case "2010": strSchemaMonet = "c2010";
-                 break;
-    case "2000": strSchemaMonet = "c2000";
-                 break;
-    case "1991": strSchemaMonet = "c1991";
-                 break;
-    case "1980": strSchemaMonet = "c1980";
-                 break;
-    case "1970": strSchemaMonet = "c1970";
-                 break;
-    default: strSchemaMonet = "c2010";
-             console.log("Sem schema!");
-             break;
-  }
-  */
-  console.log ("arrayFields: " + arrayFields.length + ". fields: " + arrayFields);
-  var strSQLSelect = "SELECT " + arrayFields + " FROM ";
-  var strMonetVars = "";
-  for (i = 0; i < arrayFields.length; i++) {
-    if (i == 0) {
-      strMonetVars = "SELECT " + arrayFields [i].replace ("VAR","V");
-      strSQLSelect = "SELECT " + arrayFields [i].replace ("VAR","V");
-    } else {
-      strMonetVars += "," + arrayFields [i].replace ("VAR","V");
-      strSQLSelect += "," + arrayFields [i].replace ("VAR","V");
-    }
-  }
-  strMonetVars += " FROM "; //c2010.tPesHeader UNION ALL ";
-  strSQLSelect += " FROM ";
-
-  if (cfg.DB_SERVER == "internuvem") {
-    strSQLSelect += strSchemaMonet + "." + strCollection;
-    strMonetVars += strSchemaMonet + "." + strCollection + "Header UNION ALL ";
-  } else {
-    if (strCollection == "tDom") {
-      strSQLSelect += "domicilio"
-    } else {
-      strSQLSelect += "pessoa"
-    }
-  }
   
-  // Seleciona estado, se houver
-  var strSQLWhere = "";
-  var strOptions = '--host ' + cfg.MONGO_IP + ":" + cfg.MONGO_PORT + " --quiet";
-  // Filter by state only if there is a selected one
-  if ((req.body.estado != null) && (req.body.estado != "")) {
-    var varEstado = utils.obtemVarEstado (req.body.ano);
-    /*
-    switch (req.body.ano) {
-      case "2010": varEstado  = "V0001";
-                   break;
-      case "2000": varEstado  = "V0102";
-                   break;
-      case "1991": varEstado  = "VAR1101";
-                  break;
-      case "1980": varEstado  = "V2";
-                   break;
-      case "1970": varEstado  = "V055";
-                   break;
-      default: varEstado  = "V0001";
-               console.log("Sem Estado");
-        break;
-    }
-    */
-    strOptions += " --query {" + varEstado + ":" + req.body.estado + "}"
-    strSQLWhere = " WHERE " + varEstado.replace ("VAR","V") + "=" + req.body.estado;
-    console.log ("Options: " + strOptions);
-  }
- 
+  var strQueryMonet = utils.createSQL (req.body, false);
   // get file name, based on date time
   var date = new Date();
   var fileName = strCollection + date.getFullYear() + (date.getMonth()+1) + date.getDate() + 
@@ -339,8 +234,9 @@ router.post('/geraArqMonet', function(req, res, next) {
 
 //      var strQueryMonet = "COPY " + strSQLSelect + strSQLWhere + " INTO \'" + cfg.MONET_DB_OUTPUT_FOLDER +
 //                          fileName + "\' DELIMITERS " + strQueryDelimiter;
-      var strQueryMonet = "COPY " + strMonetVars + strSQLSelect + strSQLWhere + " INTO \'" + cfg.MONET_DB_OUTPUT_FOLDER +
-                          fileName + "\' DELIMITERS " + strQueryDelimiter;
+      
+      // var strQueryMonet = "COPY " + strMonetVars + strSQLSelect + strSQLWhere + " INTO \'" + cfg.MONET_DB_OUTPUT_FOLDER + fileName + "\' DELIMITERS " + strQueryDelimiter;
+      var strQueryMonet = "COPY " + strQueryMonet + " INTO \'" + cfg.MONET_DB_OUTPUT_FOLDER + fileName + "\' DELIMITERS " + strQueryDelimiter;
       console.log ("QUERY/MONETDB: SQL ==> " + strQueryMonet);
       var strDBMonet = "censodb";
       
@@ -358,7 +254,7 @@ router.post('/geraArqMonet', function(req, res, next) {
                           // are being sent back and forth between 
                           // the MonetDB NodeJS module and the MonetDB server
         testing: false     // When set True, some additional (undocumented) methods 
-                          // will be  exposed, e.g. to simulate socket failures                     
+                          // will be  exposed, e.g. to simulate socket failures
       };
     
       console.log ("MONET OPTION");
@@ -369,48 +265,19 @@ router.post('/geraArqMonet', function(req, res, next) {
       conn.query(strQueryMonet)
       .then(function(result){
         console.log('MONET OK: execution succesful!!');      
-        var strTemp = "{\"database\":\"" + strDBMonet + "\",\"collection\":\"" + strCollection + "\",\"fields\":" + strFields + ",\"file\":\"" + fileName + "\",\"allValidOptions\":\"" + strOptions + "\"}";
+        var strTemp = "{\"database\":\"" + strDBMonet + "\",\"resultado\":1,\"collection\":\"" + strCollection + "\",\"fields\":" +
+                      strFields + ",\"file\":\"" + fileName + "\",\"allValidOptions\":\"" + optionsMonet + "\"}";
         res.json(strTemp);
         conn.close();
       }, function(err){
         //Handle error here
         console.error("MONET ERRO! ==> " + err);
-        res.json("");
+        var strTemp = "{\"database\":\"" + strDBMonet + "\",\"resultado\":0,\"collection\":\"" + strCollection + "\",\"fields\":" +
+                      strFields + ",\"file\":\"" + err + "\",\"allValidOptions\":\"" + optionsMonet + "\"}";
+        res.json(strTemp);
         conn.close();
       });
       
-    /*
-      var conn = new MDB(options);
-      // Connect using promises
-      conn.connect(); // Alias conn.open()
-      
-      // Note that when you have issued a query with parameters, 
-      // this will under the hood be executed in two steps 
-      // (one prepare step and one execution step). 
-      conn.prepare('SELECT id,v0001,v0002,v0011 FROM emigracao WHERE v0001=? LIMIT ?')
-      .then(function(prepResult){                  
-        prepResult.exec(['11',5])
-        .then(function(result) {
-            res.json(result.data);   
-            // do something with the result
-            console.log('connection succesful!!');     
-            console.log(result.data);
-              
-        }, function(err){
-            console.error(err);
-        });
-        // We are donde, release it (and do not wait for it, 
-        // release method does not return a promise)
-        prepResult.release();
-        // Close the connection after `release()` executed
-        conn.close();
-    
-      }, function(err){
-        //Handle error here
-        console.error(err);
-      });       
-    */
-      // ...Clóvis - monet.
   } else {
       mongoClient.connect (cfg.MONGO_URL + "/" + cfg.MONGO_DB_APP_CENSO + cfg.MONGO_URL_AUTH_DB, function (err,db) {
       assert.equal (err, null);
@@ -444,5 +311,4 @@ router.post('/geraArqMonet', function(req, res, next) {
       });
     });
   }
-
 });
