@@ -1,6 +1,12 @@
+
 body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  /*padding: 50px;*/
+  font: 12px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+.fixed-width {
+    width:900px;
+    margin: 10px;
 }
 
 a {
@@ -11,6 +17,25 @@ a {
     padding: 8px;
 }
 
+.glyphicon {
+    pointer-events: all;
+}
+
+.option-selected {
+    font-style: italic;
+    color:gray;
+}
+
+.table-show {
+    height:0px;
+    font-size:11px;
+}
+
+.table-hide {
+    height:0px;
+    font-size:11px;
+    visibility:hidden;
+}
 /* Clóvis - 20170630...
 
 .table > thead > tr > th{

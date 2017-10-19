@@ -7,6 +7,31 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 require('console-stamp')(console, 'dd/mm/yy HH:MM:ss');
+var cfg = require ('./parameters.js');
+
+// Direciona logs para arquivos, se necessário
+if (cfg.APP_MODE == "prod") {
+  // Se app em produção, cria arquivos de log para saída padrão.
+  var date = new Date();
+  var fs = require('fs');
+  // Nome do arquivo: appCenso-<aaaa><mm><dd><hh><MM>.log
+  var LogFileName = __dirname + '/log/appCenso-' + date.getFullYear() + (date.getMonth()+1) + date.getDate() +
+                    date.getHours() + date.getMinutes() + '.log';
+  var errFileName = __dirname + '/log/appCensoErr-' + date.getFullYear() + (date.getMonth()+1) + date.getDate() +
+                    date.getHours() + date.getMinutes() + '.log';
+  if (!fs.existsSync(__dirname + '/log')) {
+    console.log ("Diretório de log criado!")
+      fs.mkdirSync(__dirname + '/log');
+  }
+
+  var log_file = fs.createWriteStream(LogFileName, { flags: 'w' });
+  var err_file = fs.createWriteStream(errFileName, { flags: 'w' });
+  console.log ("LOG File: " + LogFileName);
+  console.log ("ERR File: " + errFileName);
+  process.stdout.write = log_file.write.bind(log_file);
+  process.stderr.write = err_file.write.bind(err_file);
+  //process.stderr.pipe(access);
+}
 
 var index = require('./routes/index');
 var users = require('./routes/users');
@@ -43,9 +68,12 @@ app.use(function(err, req, res, next) {
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
+  console.log("[ERRO!]: " + err.status + " - " + err.message)
   // render the error page
   res.status(err.status || 500);
-  res.render('error');
+  //res.render('error');
+  res.send(404, 'Erro ao acessar página!! Página inexistente!!');
+  //res.status(err.status || 500).send(err.message + '<br>' + 'Erro ao acessar página!! Página inexistente!!');
 });
 
 module.exports = app;
