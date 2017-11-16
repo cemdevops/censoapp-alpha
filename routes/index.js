@@ -311,10 +311,9 @@ router.get ('/theme', function(req,res) {
   mongoClient.connect (cfg.MONGO_URL + "/"  + cfg.MONGO_DB_APP_CENSO + cfg.MONGO_URL_AUTH_DB, function (err,db) {
     assert.equal (err, null,"Erro-");
     console.log ('Connect to mongoDB (Get/themes) ' + cfg.MONGO_URL + "/" + cfg.MONGO_DB_APP_CENSO);
-    var strQuery = "{\"collection\":\"" + req.query.tabela + "\"}";
-    console.log (strQuery)
+    var objQuery = {"collection":req.query.tabela,avaiable:1}
     var strFields = "{}";
-    dboper.findDocuments (db, cfg.MONGO_DB_THEMES, JSON.parse (strQuery), JSON.parse (strFields), 0, function (result) {
+    dboper.findDocuments (db, cfg.MONGO_DB_THEMES, objQuery, JSON.parse (strFields), 0, function (result) {
  //     console.log ("Themes result: " + result)
       res.json (result);
     })

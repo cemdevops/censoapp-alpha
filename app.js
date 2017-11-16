@@ -8,6 +8,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 require('console-stamp')(console, 'dd/mm/yy HH:MM:ss');
 var cfg = require ('./parameters.js');
+var queueCheckModule = require ('./public/javascripts/queueCheck');
 
 // Direciona logs para arquivos, se necessário
 if (cfg.APP_MODE == "prod") {
@@ -46,8 +47,11 @@ app.set('views', path.join(__dirname, 'views'));
 // uncomment after placing your favicon in /public
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.urlencoded({
+ limit: '50mb',
+ extended: false
+}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -75,5 +79,8 @@ app.use(function(err, req, res, next) {
   res.send(404, 'Erro ao acessar página!! Página inexistente!!');
   //res.status(err.status || 500).send(err.message + '<br>' + 'Erro ao acessar página!! Página inexistente!!');
 });
+
+//queueCheckModule.queueCheck ();
+setTimeout(queueCheckModule.queueCheck, 5 * 1000);
 
 module.exports = app;

@@ -6,9 +6,15 @@ var mongotocsv = require ('mongo-to-csv');
 var assert = require ('assert');
 var dboper = require ('../public/javascripts/operMongo');
 var utils = require ('../public/javascripts/utils');
+var fileGen = require ('../public/javascripts/fileGen');
 var url = require('url');
 // Monetdb
 var MDB = require('monetdb')();
+
+var nodemailer = require('nodemailer');
+var path = require('path');
+var fs = require('fs');
+var uniqid = require('uniqid');
 
 // GET users listing
 router.get('/', function(req, res, next) {
@@ -78,7 +84,7 @@ router.post('/geraArq', function(req, res, next) {
   // get file name, based on date time
   var date = new Date();
   var fileName = strCollection + date.getFullYear() + (date.getMonth()+1) + date.getDate() + 
-         date.getHours() + date.getMinutes() + date.getSeconds() + date.getMilliseconds() + ".csv";
+         date.getHours() + date.getMinutes() + date.getSeconds() + date.getMilliseconds() + ".csv.gz";
   var strOutput = './output/' + fileName;
 
     mongoClient.connect (cfg.MONGO_URL + "/" + cfg.MONGO_DB_APP_CENSO + cfg.MONGO_URL_AUTH_DB, function (err,db) {
@@ -124,30 +130,148 @@ router.post('/geraArq', function(req, res, next) {
  */
 router.get('/download', function(req,res){
 
-  //var url_parts = url.parse(req.url,true);
-  //console.log("Vai iniciar Download! url_parts:");
-  //console.log("Dir name: " + __dirname);
-  //console.log(req.query.file);
+  var arquivo = "";
+  var strUniqueId = req.query.file;
+  console.log ("UniqueId:", strUniqueId);
 
+  // Verifica se é código válido.
+  console.log ("Início DL - vai conectar mongo")
+  mongoClient.connect (cfg.MONGO_URL_W + "/"  + cfg.MONGO_DB_APP_CENSO + cfg.MONGO_URL_AUTH_DB, function (err,db) {
+    assert.equal (err, null,"==>Erro-" + err);
+    console.log ('Connect to mongoDB (DOWNLOAD) ' + cfg.MONGO_URL_W + "/" + cfg.MONGO_DB_APP_CENSO + cfg.MONGO_URL_AUTH_DB);
+
+    // Cria ID único
+    var strQuery = "{\"_id\":" + req.query.file + "}";
+    var objQuery = {_id: req.query.file};
+    console.log ("strQuery: ",objQuery)
+    
+//    dboper.findDocuments (db, cfg.MONGO_DB_QUEUE, JSON.parse (strQuery), {}, 0, function (resFind) {
+    dboper.findDocuments (db, cfg.MONGO_DB_QUEUE, objQuery, {}, 0, function (resFind) {
+      if (resFind.length > 0) {
+        // Encontrou o registro. Verifica se arquivo é válido.
+        console.log ("Encontrou registro: ", resFind [0]);
+        arquivo = resFind [0].file;
+        
+        if (fs.existsSync(arquivo)) { 
+          console.log("--Arquivo existe-------------");
+          console.log("--> Vai iniciar Download! File:" + arquivo);
+          console.log("---------------");
+          
+          res.download (arquivo, function (err) {
+              if (err) {
+                  console.log ("Erro no download:", err);
+                  db.close();
+                  console.log (res.headersSent)
+              } else {
+                  console.log ("Download OK!");
+                  console.log (res.headersSent);
+                  // Atualiza BD com status Download OK!
+                  var newDate = new Date();
+                  var objUpdate = {status:4, dt4:newDate};
+                  dboper.updateDocument (db, objQuery,objUpdate,cfg.MONGO_DB_QUEUE, function (resUpdtDlOk) {
+                    console.log ("Download OK!: ", resUpdtDlOk.result);
+                    db.close();
+                  });
+              }
+          });
+          
+        }
+        else {
+          console.log ("Arquivo ", arquivo, " NÃO Existe mais. EXPIRADO!!")
+          db.close();
+          console.log (res.headersSent)
+      //    res.send("<h1>Welcome</h1><p>That was easy!</p><p>That was easy!</p><br><div>Baixar Arq <a href='http://localhost:3000'> Texto </a></div>");
+          res.redirect("/");
+      //    res.sendFile(path.join(__dirname, '../', 'views', 'index.html'));
+        }
+
+/*
+        // Muda status para Download OK
+        dboper.updateDocument (db, {_id:resFind[0]._id},{status:3},cfg.MONGO_DB_QUEUE, function (resUpdtGerando) {
+          console.log ("Status Download andamento: ", resUpdtGerando.result);
+          
+          // Gera arquivo e envia e-mail
+          fileGen.geraArquivoCsv (resFind[0], function (strRes) {
+            console.log ("Chamou geraArqCsv() - 0");
+            // Muda status para gerado.
+            dboper.updateDocument (db, {_id:resFind[0]._id},{status:2},cfg.MONGO_DB_QUEUE, function (resUpdtGerado) {
+              console.log ("GERADO!: ", resUpdtGerado.result);
+              intExecutedProcess = intExecutedProcess - 1;
+              //res.json(strRes);
+              var date = resFind[0].dt0;
+              var strAux = "Data hora da geração: " + date.getFullYear() + (date.getMonth()+1) + date.getDate() + 
+                    date.getHours() + date.getMinutes() + date.getSeconds() + date.getMilliseconds() + ".csv";
+              console.log (strAux);
+              db.close();
+            });
+            
+          });
+        });
+
+*/
+
+      } else {
+        db.close();
+        console.log ("Registro inválido!!");
+        res.redirect("/");
+      }
+
+    });
+
+    /*
+    console.log ("Insert doc: ", strDoc)
+    dboper.insertDocument (db, strDoc, strColIns, function (result) {
+      //console.log ("Categories result: " + result)
+      console.log (result);
+      //res.json (result);
+    });
+    */
+
+  });
+  
+
+  /*
   if (cfg.DB_SERVER == "internuvem") {
     var file = cfg.MONET_DB_OUTPUT_FOLDER + req.query.file;
   } else {
     var file = "./output/" + req.query.file;
   }
   
-  console.log("---------------");
-  console.log("--> Vai iniciar Download! File:" + file);
-  console.log("---------------");
 
-  res.download (file, "download.csv", function (err) {
-      if (err) {
-          console.log ("Erro no download");
-          console.log (res.headersSent)
-      } else {
-          console.log ("Download OK!")
-          console.log (res.headersSent)
-      }
+  if (fs.existsSync(file)) { 
+    console.log("--Arquivo existe-------------");
+    console.log("--> Vai iniciar Download! File:" + file);
+    console.log("---------------");
+
+    res.download (file, "download.csv", function (err) {
+        if (err) {
+            console.log ("Erro no download");
+            console.log (res.headersSent)
+        } else {
+            console.log ("Download OK!")
+            console.log (res.headersSent)
+        }
+    });
+  }
+  else {
+    console.log ("Arquivo ", file, " NÃO Existe!!")
+    console.log (res.headersSent)
+//    res.send("<h1>Welcome</h1><p>That was easy!</p><p>That was easy!</p><br><div>Baixar Arq <a href='http://localhost:3000'> Texto </a></div>");
+    res.redirect("/");
+//    res.sendFile(path.join(__dirname, '../', 'views', 'index.html'));
+  }
+  */
+
+  /*
+  fs.existsSync(file, function(exists) {
+    if (exists) {
+      console.log ("Arquivo existe 1!")
+    } else {
+      console.log ("Arquivo NÃO Existe 1!!")
+    }
   });
+  */
+
 });
 
 // ===============================================================================
@@ -198,6 +322,15 @@ router.post('/geraArqMonet', function(req, res, next) {
     strDataFormat = req.body.formatoDados;
   }
 
+  if ((req.body.email == null) || (req.body.email == "")) {
+    console.log ("Post/geraArq: email inválido. Vai retornar!");
+    res.json ("");
+    return;
+  } else {
+    // get tabela
+    strEmail = req.body.email;
+  }
+
   if ((req.body.selectedVariables == null) || (req.body.selectedVariables.length < 1)) {
     console.log ("Post/geraArq: variáveis não selecionadas. Vai retornar!");
     res.json ("");
@@ -218,7 +351,6 @@ router.post('/geraArqMonet', function(req, res, next) {
   var date = new Date();
   var fileName = strCollection + date.getFullYear() + (date.getMonth()+1) + date.getDate() + 
          date.getHours() + date.getMinutes() + date.getSeconds() + date.getMilliseconds() + ".csv";
-  var strOutput = './output/' + fileName;
 
   var dbAtual = cfg.DB_INIC;
 
@@ -232,58 +364,86 @@ router.post('/geraArqMonet', function(req, res, next) {
     }
     strQueryDelimiter += ",\'\\n\',\'\' NULL AS \'\'";
 
-//      var strQueryMonet = "COPY " + strSQLSelect + strSQLWhere + " INTO \'" + cfg.MONET_DB_OUTPUT_FOLDER +
-//                          fileName + "\' DELIMITERS " + strQueryDelimiter;
-      
-      // var strQueryMonet = "COPY " + strMonetVars + strSQLSelect + strSQLWhere + " INTO \'" + cfg.MONET_DB_OUTPUT_FOLDER + fileName + "\' DELIMITERS " + strQueryDelimiter;
-      var strQueryMonet = "COPY " + strQueryMonet + " INTO \'" + cfg.MONET_DB_OUTPUT_FOLDER + fileName + "\' DELIMITERS " + strQueryDelimiter;
-      console.log ("QUERY/MONETDB: SQL ==> " + strQueryMonet);
-      var strDBMonet = "censodb";
-      
-      // create a variable to connect to MonetDB
-      var optionsMonet = {
-        host  : cfg.MONET_DB_HOST, 
-        port  : cfg.MONET_DB_PORT,
-        dbname: strDBMonet,
-        user  : cfg.MONET_DB_USER,
-        password: cfg.MONET_DB_USER,
-        language: 'sql',
-        prettyResult: true, // the query result will be JSON   
-        debug: false,      // Whether or not to log general debug messages
-        debugMapi: false,  // Whether or not to show the Mapi messages that
-                          // are being sent back and forth between 
-                          // the MonetDB NodeJS module and the MonetDB server
-        testing: false     // When set True, some additional (undocumented) methods 
-                          // will be  exposed, e.g. to simulate socket failures
+    var strQueryMonet = "COPY " + strQueryMonet + " INTO \'" + cfg.MONET_DB_OUTPUT_FOLDER + fileName + "\' DELIMITERS " + strQueryDelimiter;
+    console.log ("QUERY/MONETDB: SQL ==> " + strQueryMonet);
+    var strDBMonet = "censodb";
+    
+    // Insere geração na FILA para execução
+    
+    // 1 - pode verificar complexidade para inserir prioridade.
+
+    // Precisa de:
+    // - Unique ID
+    // - Select
+    // - Nome d arquivo
+    // - Email destino
+    // - Hora início
+    // - Estado
+    // - Prioridade (?)
+    mongoClient.connect (cfg.MONGO_URL_W + "/"  + cfg.MONGO_DB_APP_CENSO + cfg.MONGO_URL_AUTH_DB, function (err,db) {
+      assert.equal (err, null,"Erro-" + err);
+      console.log ('Connect to mongoDB (Input-Queue) ' + cfg.MONGO_URL_W + "/" + cfg.MONGO_DB_APP_CENSO + cfg.MONGO_URL_AUTH_DB);
+
+      // Cria ID único
+      var strUniqueId = uniqid ();
+      strDoc = {
+        "_id": strUniqueId,
+        "query": strQueryMonet,
+        "filename":fileName,
+        "file": cfg.MONET_DB_OUTPUT_FOLDER + fileName,
+        "email": strEmail,
+        "dt0": new Date(), // data criação
+        "dt1": "", // data início geração
+        "dt2": null, // data fim geração
+        "dt3": null, // data envio e-mail
+        "dt4": null, // data download
+        "status": 0, // 0-Enfileirado, 1-Gerando, 2-Gerado, 3-Email enviado, 4-Download OK, 9-Erro
+        "priority": 1
       };
-    
-      console.log ("MONET OPTION");
-      console.log (optionsMonet);
-    
-      var conn = new MDB(optionsMonet);
-      conn.connect();
-      conn.query(strQueryMonet)
-      .then(function(result){
-        console.log('MONET OK: execution succesful!!');      
-        var strTemp = "{\"database\":\"" + strDBMonet + "\",\"resultado\":1,\"collection\":\"" + strCollection + "\",\"fields\":" +
-                      strFields + ",\"file\":\"" + fileName + "\",\"allValidOptions\":\"" + optionsMonet + "\"}";
+
+      console.log ("Insert doc: ", strDoc)
+      dboper.insertDocument (db, strDoc, cfg.MONGO_DB_QUEUE, function (result) {
+        //console.log ("Categories result: " + result)
+        console.log (result);
+        strTemp = "{\"resultado\":1,\"file\":\"" + fileName + "\"}"
+        console.log ("strTEMP: ", strTemp);
+        db.close ();
         res.json(strTemp);
-        conn.close();
-      }, function(err){
-        //Handle error here
-        console.error("MONET ERRO! ==> " + err);
-        var strTemp = "{\"database\":\"" + strDBMonet + "\",\"resultado\":0,\"collection\":\"" + strCollection + "\",\"fields\":" +
-                      strFields + ",\"file\":\"" + err + "\",\"allValidOptions\":\"" + optionsMonet + "\"}";
-        res.json(strTemp);
-        conn.close();
-      });
-      
+        //res.json (result);
+      })
+    });
+
+    console.log ("Depois de Connect to mongoDB (Input-Queue)")
+    /*
+    var optionsMonet = {
+      host  : cfg.MONET_DB_HOST, 
+      port  : cfg.MONET_DB_PORT,
+      dbname: strDBMonet,
+      user  : cfg.MONET_DB_USER,
+      password: cfg.MONET_DB_USER,
+      language: 'sql',
+      prettyResult: true, // the query result will be JSON   
+      debug: false,      // Whether or not to log general debug messages
+      debugMapi: false,  // Whether or not to show the Mapi messages that
+                        // are being sent back and forth between 
+                        // the MonetDB NodeJS module and the MonetDB server
+      testing: false     // When set True, some additional (undocumented) methods 
+                        // will be  exposed, e.g. to simulate socket failures
+    };
+    var strTemp = "{\"database\":\"" + strDBMonet + "\",\"resultado\":1,\"collection\":\"" + strCollection + "\",\"fields\":" +
+                  strFields + ",\"file\":\"" + fileName + "\",\"allValidOptions\":\"" + optionsMonet + "\"}";
+    strTemp = "{resultado:1,file:" + fileName + "}"
+    console.log ("strTEMP: ", strTemp);
+    res.json(strTemp);
+    */
+
   } else {
       mongoClient.connect (cfg.MONGO_URL + "/" + cfg.MONGO_DB_APP_CENSO + cfg.MONGO_URL_AUTH_DB, function (err,db) {
       assert.equal (err, null);
       console.log ('Connect to mongoDB (Post/geraArq) ' + cfg.MONGO_URL + "/" + cfg.MONGO_DB_APP_CENSO);
       var strQueryYear = "{\"year\":" + intAno + "}";
       var strFieldDbName = "{\"year\":1,\"dbName\":1}";
+      var strOutput = './output/' + fileName;
       // Obtém nome da coleção, de acordo com ano.
       dboper.findDocuments (db, cfg.MONGO_DB_GERAL, JSON.parse (strQueryYear), JSON.parse (strFieldDbName), 0, function (result) {
         if (result.length > 0) {
@@ -311,4 +471,17 @@ router.post('/geraArqMonet', function(req, res, next) {
       });
     });
   }
+});
+
+router.post('/geraArqMonet-2', function(req, res, next) {
+  console.log("POST files/GeraARQMonet-2");
+
+  console.log (req.body.uniqueID);
+
+  fileGen.geraArquivoCsv (req.body.uniqueID, function (strRes) {
+    console.log ("Chamou geraArqCsv() - 0")
+    res.json(strRes);
+  });
+
+  console.log ("Chamou geraArqCsv() - 1")
 });

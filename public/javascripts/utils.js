@@ -49,6 +49,9 @@ console.log ("vai obter schema: ", strCenso);
       case "1970": varSchema.push ({ano:strCenso [i],schema:"c1970"});
       console.log(strCenso [i]);
       break;
+      case "1960": varSchema.push ({ano:strCenso [i],schema:"c1960"});
+      console.log(strCenso [i]);
+      break;
       default: varSchema.push ({ano:strCenso [i],schema:"c2010"});
       console.log(strCenso [i]);
       console.log("Sem schema!");
@@ -110,6 +113,9 @@ exports.createSQL = function (objreq, sview) {
       case 1970: spref = "c70_";
 //        console.log("Prefixe: " + selem.year + " = c_70");
       break;
+      case 1960: spref = "c60_";
+//        console.log("Prefixe: " + selem.year + " = c_60");
+      break;
       default: spref = "c10_";
 //      console.log("Sem prefixo!");
                break;
@@ -150,9 +156,13 @@ exports.createSQL = function (objreq, sview) {
         //console.log("Adiciona element field: " + selem.year + " variavel: " + selem.varCode);
         var svarCode = selem.varCode.replace("VAR","V");
         if (i > 0) {
-          ssqlfields += ",\"A" + sSchema[x].ano + "\"." + svarCode;
+          // Clóvis
+          // ssqlfields += ",\"A" + sSchema[x].ano + "\"." + svarCode;
+          ssqlfields += ", cast(" + svarCode + " as varchar(20))";
         } else
-          ssqlfields += "\"A" + sSchema[x].ano + "\"." + svarCode;
+          // Clóvis
+          // ssqlfields += "\"A" + sSchema[x].ano + "\"." + svarCode;
+          ssqlfields += "cast(" + svarCode + " as varchar(20))";
       } else {
         if (i > 0) 
            ssqlfields += ",''";
@@ -182,11 +192,15 @@ exports.createSQL = function (objreq, sview) {
     // }
     //console.log("UFs selecionadas: " + ssqluf);
 
-    ssql = ssqlfields + " FROM c" + sSchema[x].ano + "." + strCollection + " as \"A" + sSchema[x].ano +"\"";
+    //Clóvis
+    // ssql = ssqlfields + " FROM c" + sSchema[x].ano + "." + strCollection + " as \"A" + sSchema[x].ano +"\"";
+    ssql = ssqlfields + " FROM c" + sSchema[x].ano + "." + strCollection; // + " as \"A" + sSchema[x].ano +"\"";
     // sSchema[x].ano + "\"." + svaruf  + " WHERE \"A" + " IN (" + ssqluf + ")";    
     console.log("VISUALIZAR: " + sview + " Collection: " + strCollection);
     var svaruf = exports.obtemVarEstado (sSchema[x].ano);
-    ssql = ssqlfields + " FROM c" + sSchema[x].ano + "." + strCollection + " as \"A" + sSchema[x].ano +"\"";
+    //Clóvis
+    // ssql = ssqlfields + " FROM c" + sSchema[x].ano + "." + strCollection + " as \"A" + sSchema[x].ano +"\"";
+    ssql = ssqlfields + " FROM c" + sSchema[x].ano + "." + strCollection; // + " as \"A" + sSchema[x].ano +"\"";
     // sSchema[x].ano + "\"." + svaruf  + " WHERE \"A" + " IN (" + ssqluf + ")";    
     var sid = "";
     if (sview) {
