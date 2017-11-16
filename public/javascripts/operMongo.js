@@ -32,7 +32,7 @@ exports.updateDocument = function (db, document, update, collection, callback) {
   var coll = db.collection (collection);
   coll.updateOne (document, {$set: update}, null, function (err, result) {
     assert.equal (err, null);
-    console.log ("Updated document with " + update);
+    console.log ("Updated document with ", update);
     callback (result);
   });
 }

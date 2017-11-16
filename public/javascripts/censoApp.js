@@ -1,4 +1,3 @@
-
 // The "censoApp" parameter refers to an HTML element in which the application will run.
 // The [] parameter in the module definition can be used to define dependent modules.
 // Without the [] parameter, you are not creating a new module, but retrieving an existing one.
@@ -62,11 +61,13 @@ censoApp.controller('submitController',['$scope', '$http', function ($scope, $ht
             $scope.data = [];
 
             if (objVar.catType == 0 || objVar.catType == 5) {
-                console.log ("Coleção");
+                console.log ("Coleção: ", response.data[0].collection.variable.category[0].value);
                 var strColecao = "";
+
                 if (response.data[0].collection.variable.category[0].value == "col" ||
                     response.data[0].collection.variable.category[0].value == 0)
                 {
+                    console.log ("Vai procurar: ", response.data[0].collection.variable.category[0].label);
                     strColecao = response.data[0].collection.variable.category[0].label
                     //console.log (strColecao);
                     $http.get('/auxiliares?coll=' + strColecao + '&ano=' + objVar.year + '&dbName=' + response.data[0].dbName)
@@ -271,49 +272,69 @@ censoApp.controller('submitController',['$scope', '$http', function ($scope, $ht
             return;
         }
         
-        // Atualiza informações na página principal
-        $scope.msgConfirmaGera = "Gerando arquivo...";
-        $scope.baixarArq = "";
+        $scope.parameters.email = "";
 
-        var strChosenDB = '/files/geraArqMonet';
-        if (strCfgBD == "monet") {
-            strChosenDB = '/files/geraArqMonet';
-        } else {
-            strChosenDB = '/files/geraArqMongo';
-        }
-        
-        $http({
-            method: 'post',
-            url: strChosenDB,
-            data: $scope.parameters
-        }).then(function(httpResponse){
-            // this callback will be called asynchronously
-            // when the response is available
-            var result = httpResponse.data;
-            var arrayX= JSON.parse (result)
-            if (arrayX.resultado == 1) {
-                // Geração do arquivo OK.
-                console.log ("Arquivo gerado! : " + arrayX.file);
-                // Arquivo gerado. Atualiza informações na tela.
-                $scope.dataFile = httpResponse.data;
-                $scope.baixarArq = "Baixar arquivo gerado.";
-                $scope.texto = "Clique para download";
-                $scope.msgConfirmaGera = "Arquivo gerado";
-                $scope.fileLink = "files/download/?file=" + arrayX.file;
-            } else {
-                // Erro na geração do arquivo.
-                console.log ("Erro na geração! : " + arrayX.file);
-                $scope.msgConfirmaGera = "Arquivo não gerado";
-                $scope.baixarArq = arrayX.file.substring (0,50);
-                $scope.texto = "";
-                $scope.fileLink = "" + arrayX.file;
+        bootbox.prompt ({
+            title: "Favor inserir e-mail destino:",
+            inputType: "email",
+            callback: function (result) {
+                if (!result) {
+                    console.log("CANCELADO!");
+                } else {
+                    console.log("Vai gerar!!");
+                    var strEmail = result;
+                    // Atualiza informações na página principal
+                    $scope.msgConfirmaGera = "Processando...";
+                    $scope.baixarArq = "";
+
+                    var strChosenDB = '/files/geraArqMonet';
+                    if (strCfgBD == "monet") {
+                        strChosenDB = '/files/geraArqMonet';
+                    } else {
+                        strChosenDB = '/files/geraArqMongo';
+                    }
+
+                    $scope.parameters.email = strEmail;
+                    
+                    $http({
+                        method: 'post',
+                        url: strChosenDB,
+                        data: $scope.parameters
+                    }).then(function(httpResponse){
+                        // this callback will be called asynchronously
+                        // when the response is available
+                        //var resultado = httpResponse.data;
+                        var resultado = JSON.parse (httpResponse.data);
+                        if (resultado.resultado == 1) {
+                            // Geração do arquivo OK.
+                            console.log ("Arquivo gerado! : " + resultado.file);
+                            // Arquivo gerado. Atualiza informações na tela.
+                            $scope.dataFile = httpResponse.data;
+                            $scope.baixarArq = strEmail;
+                            //$scope.texto = resultado.file;
+                            $scope.texto = "";
+                            $scope.msgConfirmaGera = "link para download será enviado para o e-mail:";
+                            //$scope.fileLink = "files/download/?file=" + resultado.file;
+                            $scope.fileLink = "";
+                        } else {
+                            // Erro na geração do arquivo.
+                            console.log ("Erro na geração! : " + resultado.file);
+                            $scope.msgConfirmaGera = "Arquivo não gerado";
+                            $scope.baixarArq = resultado.file.substring (0,50);
+                            $scope.texto = "";
+                            $scope.fileLink = "" + resultado.file;
+                        }
+
+                    }, function(httpResponse) {
+                        // called asynchronously if an error occurs
+                        // or server returns response with an error status.
+                        $scope.msg = 'Erro na geração do arquivo:('; 
+                    });
+                }
+
             }
-
-        }, function(httpResponse) {
-            // called asynchronously if an error occurs
-            // or server returns response with an error status.
-            $scope.msg = 'Erro na geração do arquivo:('; 
         });
+
     }
 
     $scope.$on ("clearDataQuery", function(event, data) {
