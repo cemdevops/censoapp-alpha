@@ -351,18 +351,31 @@
                             <!--                  <th><input type="checkbox" id="selectBox"></th> -->
                             <th style="vertical-align:middle;width:10px">Ano</th>
                             <th>Código</th>
+                            <th></th>
                             <th>Descrição</th>
                             <th>Excluir</th>
                             <!-- <th></th> -->
                         </tr>
                         <tr ng-repeat="item in parameters.selectedVariables">
                             <td style="vertical-align:middle;">{{item.year}}</td>
-                            <td style="vertical-align:middle;width:30px;padding-right:10px">{{item.varCode}}&nbsp&nbsp&nbsp&nbsp<a href="" data-toggle="modal" data-target="#myModal"><span data-toggle="tooltip" title="Clique para detalhes da variável {{item.varCode}}" class="glyphicon glyphicon-question-sign" ng-click="InfoVar(item)"><b>?</b></span></a></td> <!-- InfoVar(item) -->
+                            <td style="vertical-align:middle;width:30px;">{{item.varCode}}</td>
+                            <td style="vertical-align:middle;width:5px;">
+                                <a href="" data-toggle="modal" data-target="#myModal"><i title="Informação detalhada da variável" style="font-size: 1.3em;" class="fa fa-info-circle text-info"></i>
+                                <!--<span data-toggle="tooltip" title="Clique para detalhes da variável {{item.varCode}}" class="glyphicon glyphicon-question-sign" ng-click="InfoVar(item)">
+                                    <b>?</b>
+                                </span>-->
+                                </a>
+                            </td> <!-- InfoVar(item) -->
                             <!--
                             <td style="vertical-align: middle;">xx<a href="#"><span class="glyphicon glyphicon-question-sign"></span></a></td>
                             -->
                             <td style="vertical-align:middle;">{{item.label}}</td>
-                            <td style="vertical-align:middle;width:30px;text-align:center" ng-click="RemoveVar(item,$index)"><a href=""><span data-toggle="tooltip" title="Clique para excluir a variável {{item.varCode}} da lista de variáveis selecionadas" class="glyphicon glyphicon-remove" style="color:red">x</span></a></td>
+                            <td style="vertical-align:middle;width:30px;text-align:center" ng-click="RemoveVar(item,$index)">
+                                <a href="">
+                                    <i title="Clique para excluir a variável {{item.varCode}} da lista de variáveis selecionadas" style="font-size: 1.3em;" class="fa fa-times text-danger"></i>
+                                    <!--<span data-toggle="tooltip" title="Clique para excluir a variável {{item.varCode}} da lista de variáveis selecionadas" class="glyphicon glyphicon-remove" style="color:red">x</span>-->
+                                </a>
+                            </td>
                             <!--
                             <td style="text-align:center;vertical-align:middle;"><input type="checkbox" id="V0001"></td>
                             <td>>= d</td>
@@ -397,7 +410,7 @@
             <!-- <div class="form-inline"> -->
 
                 <div style="float: left;">
-                    <label>Opções de arquivo de saida</label>
+                    <h6>Opções de arquivo de saida</h6>
                     <br><br>
                     <input id = "radioCSVComma" type="radio" name="formatoDados" ng-model="parameters.formatoDados" value="csv-commas" checked="checked">
                         &nbspCSV delimitado por vírgula
@@ -412,6 +425,7 @@
                     <!--
                     <input id="teste" class="form-group btn btn-info" style="margin-left:200px;width:120px" type="submit" value="teste rem" ng-click="submitTESTErem()">
                     -->
+
                     <input id="btnConfSolic" class="form-group btn btn-info" style="width:240px" type="submit" value="Visualizar e gerar arquivo" ng-click="submitQuery()" onclick="EnableGera()">
                     </input>
                     
