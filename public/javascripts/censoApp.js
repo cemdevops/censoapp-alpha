@@ -264,7 +264,7 @@ var strHTML = "<div style='height:185px;width:600px;overflow-x:auto'>" +
                 var strHTMLVar = "<div style='height:500px;width:100%;overflow-x:auto'>" +
                     "<form>" +
                     "<div class='form-group'>" +
-                    " <input id='inputEmail' type='email' name='email' value='' class='form-control' aria-describedby='emailHelp' placeholder='Insira o e-mail destino'>" +
+                    " <input id='inputEmail' type='email' name='email' value='' class='form-control is-invalid' aria-describedby='emailHelp' placeholder='Insira o e-mail destino' required>" +
                     " <small id='emailHelp' class='form-text text-muted'>Não compartilharemos seu email com ninguém.</small>" +
                     "</div>" +
                     "<div class='form-group'>" +
@@ -436,7 +436,17 @@ var strHTML = "<div style='height:185px;width:600px;overflow-x:auto'>" +
             alert("Favor selecionar um formato de dados");
             return;
         }
-        
+
+        // Informar que tipos de informação será enviado para o email
+        bootbox.alert ({
+            size: "medium",
+            title: "Obrigada por usar o App!",
+            message: "<div class='alert alert-info' role='alert'>" +
+            "  Você receberá um email contendo links para baixar o arquivo gerado com as variáveis solicitadas, " +
+            "o dicionário de dados e  os manuais de IBGE correspondentes aos anos dos censos que você selecionou" +
+            "</div>"
+        });
+
         //$scope.parameters.email = "";
 
         /*
@@ -721,7 +731,9 @@ censoApp.controller('tablesController', function ($scope, $rootScope, $http) {
             ($scope.parameters.selectedVariables[0] != null)) {
             bootbox.confirm({
                 title: "Alteração de tipo de dados",
-                message: "Há variáveis selecionadas. A mudança de tipo de dados descartará essas variáveis!",
+                message: "<div class='alert alert-warning' role='alert'>" +
+                "  Há variáveis selecionadas. A mudança de tipo de dados descartará essas variáveis!" +
+                "</div>",
                 buttons: {
                     confirm: {
                         label: 'Continua',
