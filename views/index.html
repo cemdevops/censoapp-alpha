@@ -485,7 +485,6 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
             </div>
         </div>
     </div>
@@ -497,36 +496,47 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
-
+                <h5 class="modal-title" id="myModalLabel">Detalhes da variável {{codigoVariavel}} do Censo {{anoVariavel}}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
                 </button>
-                <h4 class="modal-title" id="myModalLabel">Detalhes da variável {{codigoVariavel}} do Censo {{anoVariavel}}</h4>
-
             </div>
             <div class="modal-body">
-                <div role="tabpanel">
+
                     <!-- Nav tabs -->
-                    <ul class="nav nav-tabs" role="tablist">
-                        <li role="presentation" class="active"><a href="#descTab" aria-controls="descTab" role="tab" data-toggle="tab">Descrição Detalhada</a></li>
-                        <li role="presentation"><a href="#popToAplyTab" aria-controls="popToAplyTab" role="tab" data-toggle="tab">População a qual se aplica</a></li>
-                        <li role="presentation"><a href="#obsTab" aria-controls="obsTab" role="tab" data-toggle="tab">Observações</a></li>
-                        <li role="presentation"><a href="#catTab" aria-controls="catTab" role="tab" data-toggle="tab">Categorias</a></li>
+                    <ul class="nav nav-tabs" id="variablesInfoTab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active"  href="#descTab" id="desc-tab" aria-controls="descTab"
+                               role="tab" data-toggle="tab" aria-selected="true" title="Descrição detalhada">Descrição</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#popToAplyTab" id="popToApply-tab" aria-controls="popToAplyTab"
+                               role="tab" data-toggle="tab" aria-selected="false" title="">População a qual se aplica</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#obsTab" id="obs-tab" aria-controls="obsTab"
+                                                role="tab" data-toggle="tab" aria-selected="false" title="">Observações</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#catTab" id="cat-tab" aria-controls="catTab"
+                                                role="tab" data-toggle="tab" aria-selected="false" title="">Categorias</a>
+                        </li>
                     </ul>
                     <!-- Tab panels -->
-                    <div class="tab-content">
-                        <div role="tabpanel" class="tab-pane active" id="descTab" style="margin-left:10px;height:200px;overflow-y:scroll">
+                    <div class="tab-content" id="variablesInfoTabContent">
+                        <div role="tabpanel" class="tab-pane fade show active" id="descTab" aria-labelledby="desc-tab" style="margin-left:10px;height:200px;overflow-y:scroll">
                             <br>
                             <p style="white-space:pre-wrap;">{{textoDescricaoVar}}</p>
                         </div>
-                        <div role="tabpanel" class="tab-pane" id="popToAplyTab" style="margin-left:10px;height:200px;overflow-y:scroll">
+                        <div role="tabpanel" class="tab-pane fade" id="popToAplyTab" aria-labelledby="popToApply-tab" style="margin-left:10px;height:200px;overflow-y:scroll">
                             <br>
                             <p style="white-space:pre-wrap;">{{textoPopToApplyVar}}</p>
                         </div>
-                        <div role="tabpanel" class="tab-pane" id="obsTab" style="margin-left:10px;height:200px;overflow-y:scroll">
+                        <div role="tabpanel" class="tab-pane fade" id="obsTab" aria-labelledby="obs-tab" style="margin-left:10px;height:200px;overflow-y:scroll">
                             <br>
                             <p style="white-space:pre-wrap;">{{textoObsVar}}</p>
                         </div>
-                        <div role="tabpanel" class="tab-pane" id="catTab" style="margin-left:10px;height:200px;overflow-y:scroll">
+                        <div role="tabpanel" class="tab-pane fade" id="catTab" aria-labelledby="cat-tab" style="margin-left:10px;height:200px;overflow-y:scroll">
                             <br>
                             <p style="white-space:pre-wrap;">{{textoCategoriaVar}}</p>
                             <table id = "tabCategory" name="category[]"  class="table table-condensed {{categoryTableClass}}" ng-model="data.category">
@@ -541,7 +551,7 @@
                             </table>
                         </div>
                     </div>
-                </div>
+
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
