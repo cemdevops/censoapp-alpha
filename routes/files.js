@@ -130,8 +130,9 @@ router.post('/geraArq', function(req, res, next) {
  */
 router.get('/download', function(req,res){
 
-  var arquivo = "";
+  var strFile = "";
   var strUniqueId = req.query.file;
+  var typeFile = req.query.ty;
   console.log ("UniqueId:", strUniqueId);
 
   // Verifica se é código válido.
@@ -141,23 +142,27 @@ router.get('/download', function(req,res){
     console.log ('Connect to mongoDB (DOWNLOAD) ' + cfg.MONGO_URL_W + "/" + cfg.MONGO_DB_APP_CENSO + cfg.MONGO_URL_AUTH_DB);
 
     // Cria ID único
-    var strQuery = "{\"_id\":" + req.query.file + "}";
-    var objQuery = {_id: req.query.file};
-    console.log ("strQuery: ",objQuery)
+    //var strQuery = "{\"_id\":" + strUniqueId + "}";
+    var objQuery = {_id: strUniqueId};
+//    console.log ("strQuery: ",objQuery)
     
 //    dboper.findDocuments (db, cfg.MONGO_DB_QUEUE, JSON.parse (strQuery), {}, 0, function (resFind) {
     dboper.findDocuments (db, cfg.MONGO_DB_QUEUE, objQuery, {}, 0, function (resFind) {
       if (resFind.length > 0) {
         // Encontrou o registro. Verifica se arquivo é válido.
         console.log ("Encontrou registro: ", resFind [0]);
-        arquivo = resFind [0].file;
+        if (typeFile == 0) {
+          // Arquivo de dados
+          strFile = resFind [0].file;
+        } else {
+          // Arquivo de metadados
+          strFile = cfg.MONET_DB_OUTPUT_FOLDER + resFind [0].simpleFn + ".zip";
+        }
         
-        if (fs.existsSync(arquivo)) { 
-          console.log("--Arquivo existe-------------");
-          console.log("--> Vai iniciar Download! File:" + arquivo);
-          console.log("---------------");
+        if (fs.existsSync(strFile)) { 
+          console.log("--> Vai iniciar Download! File:" + strFile);
           
-          res.download (arquivo, function (err) {
+          res.download (strFile, function (err) {
               if (err) {
                   console.log ("Erro no download:", err);
                   db.close();
@@ -168,7 +173,7 @@ router.get('/download', function(req,res){
                   // Atualiza BD com status Download OK!
                   var newDate = new Date();
                   var objUpdate = {status:4, dt4:newDate};
-                  dboper.updateDocument (db, objQuery,objUpdate,cfg.MONGO_DB_QUEUE, function (resUpdtDlOk) {
+                  dboper.updateDocument (db, objQuery, objUpdate, cfg.MONGO_DB_QUEUE, function (resUpdtDlOk) {
                     console.log ("Download OK!: ", resUpdtDlOk.result);
                     db.close();
                   });
@@ -177,7 +182,7 @@ router.get('/download', function(req,res){
           
         }
         else {
-          console.log ("Arquivo ", arquivo, " NÃO Existe mais. EXPIRADO!!")
+          console.log ("Arquivo ", strFile, " NÃO Existe mais. EXPIRADO!!")
           db.close();
           console.log (res.headersSent)
       //    res.send("<h1>Welcome</h1><p>That was easy!</p><p>That was easy!</p><br><div>Baixar Arq <a href='http://localhost:3000'> Texto </a></div>");
@@ -349,8 +354,9 @@ router.post('/geraArqMonet', function(req, res, next) {
   var strQueryMonet = utils.createSQL (req.body, false);
   // get file name, based on date time
   var date = new Date();
-  var fileName = strCollection + date.getFullYear() + (date.getMonth()+1) + date.getDate() + 
-         date.getHours() + date.getMinutes() + date.getSeconds() + date.getMilliseconds() + ".csv";
+  var simpleFileName = strCollection + date.getFullYear() + (date.getMonth()+1) + date.getDate() +
+                  date.getHours() + date.getMinutes() + date.getSeconds() + date.getMilliseconds();
+  var fileName = simpleFileName + ".csv.gz";
 
   var dbAtual = cfg.DB_INIC;
 
@@ -366,7 +372,7 @@ router.post('/geraArqMonet', function(req, res, next) {
 
     var strQueryMonet = "COPY " + strQueryMonet + " INTO \'" + cfg.MONET_DB_OUTPUT_FOLDER + fileName + "\' DELIMITERS " + strQueryDelimiter;
     console.log ("QUERY/MONETDB: SQL ==> " + strQueryMonet);
-    var strDBMonet = "censodb";
+    //var strDBMonet = "censodb";
     
     // Insere geração na FILA para execução
     
@@ -386,10 +392,14 @@ router.post('/geraArqMonet', function(req, res, next) {
 
       // Cria ID único
       var strUniqueId = uniqid ();
+
+      var objQryData = utils.getQryData (req.body);
+      console.log ("objQryData:\n", objQryData);
+
       strDoc = {
         "_id": strUniqueId,
-        "query": strQueryMonet,
         "filename":fileName,
+        "simpleFn": simpleFileName,
         "file": cfg.MONET_DB_OUTPUT_FOLDER + fileName,
         "email": strEmail,
         "dt0": new Date(), // data criação
@@ -398,7 +408,10 @@ router.post('/geraArqMonet', function(req, res, next) {
         "dt3": null, // data envio e-mail
         "dt4": null, // data download
         "status": 0, // 0-Enfileirado, 1-Gerando, 2-Gerado, 3-Email enviado, 4-Download OK, 9-Erro
-        "priority": 1
+        "priority": 1,
+        "coll": strCollection,
+        "query": strQueryMonet,
+        "qryData": objQryData
       };
 
       console.log ("Insert doc: ", strDoc)
@@ -474,14 +487,19 @@ router.post('/geraArqMonet', function(req, res, next) {
 });
 
 router.post('/geraArqMonet-2', function(req, res, next) {
-  console.log("POST files/GeraARQMonet-2");
+  console.log("\n\n\n\n00 - POST files/GeraARQMonet-2");
 
-  console.log (req.body.uniqueID);
+  var objQryData = utils.getQryData (req.body);
+  console.log("05 - Vai gerar metadados");
+  fileGen.geraArquivoMetadados (objQryData, req.body.tabela, "t2010", function (strRes) {
+    console.log ("08 - Terminou de gerar arquivo metadados 0:", strRes);
 
-  fileGen.geraArquivoCsv (req.body.uniqueID, function (strRes) {
-    console.log ("Chamou geraArqCsv() - 0")
-    res.json(strRes);
+    var fileName = "POST files/GeraARQMonet-2";
+    var strTemp = "{\"resultado\":1,\"file\":\"" + fileName + "\"}"
+    res.json(strTemp);
+  
   });
+  console.log("09 - Logo após gerar metadados1");
 
-  console.log ("Chamou geraArqCsv() - 1")
+
 });

@@ -59,6 +59,7 @@ exports.queueCheck =  function queueCheck() {
         // Verifica se tem arquivos para serem gerados.
         /**
          * TODO: fazer consulta para ordenar de acordo com prioridade e ordem
+         *       Atualmente está pegando o primeiro
          */
         dboper.findDocuments (db, cfg.MONGO_DB_QUEUE, objQuery, {}, 0, function (resFind) {
           //console.log (resFind);
@@ -72,6 +73,18 @@ exports.queueCheck =  function queueCheck() {
             }
 
             //console.log (resFind[0]);
+            var objQryData = resFind[0].qryData;
+            console.log ("QUEUE: ", objQryData);
+            for (var exKey in objQryData) {
+              console.log ("year:",objQryData[exKey].year);
+              vars = objQryData[exKey].var;
+              console.log ("Vars: ", vars);
+              for (var exVar in vars) {
+                console.log ("exVAR: ", exVar)
+               // console.log (vars[0])
+                console.log ("VarCode: ", vars [exVar])
+              }
+            }
 
             var newDate = new Date();
 
@@ -125,4 +138,3 @@ exports.queueCheck =  function queueCheck() {
     setTimeout(checkQueue, cfg.QUEUE_CHECK_INTERVAL_SECONDS*1000);
   }
 }
-

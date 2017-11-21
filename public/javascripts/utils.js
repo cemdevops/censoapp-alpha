@@ -1,5 +1,6 @@
  //MongoClient = require('mongodb').MongoClient,
 var assert = require('assert');
+var cfg = require ('../../parameters.js');
 
 // Função para retornar variávei Estado de acordo com o censo.
 exports.obtemVarEstado =  function (strEstado) {
@@ -228,85 +229,97 @@ exports.createSQL = function (objreq, sview) {
 
 }
 
-// var ssqlfull = "";
-// for (i = 0; i < arraysql.length; i++) {
-//   if ((i == 0) && (!sview)) 
-//       console.log("Processa visualização");
-//   else if ((i == 1) && (sview))
-//          ssqlfull += arraysql[i] + " ";
-//   else {
-//     if (i > 0) 
-//        ssqlfull += ' UNION ALL ' +  arraysql[i];
-//     else
-//        ssqlfull += arraysql[i];
-//   }
-// }
-// console.log("Visualiza : " + sview + " SQL FULL: " + ssqlfull);
-// return ssqlfull;
+exports.getQryData = function (objReq) {
+  var selVar = objReq.selectedVariables;
+  //console.log ("selVar: ", selVar);
 
-// //console.log("Process variavel : " + arraysqlfields.toString());
-
-//   //console.log("Anos processados: " + strAnos);
-
-//   var strMonetVars = "";
+  var objRet = [];
+  var objVar = {};
   
-//   var strFields = "[";
- 
-//   // Filtra campos.
-//   for (i = 0; i < objreq.variaveis.length; i++) {
-//     if (i > 0) {
-//       strFields += ",";
-//     }
-//     strFields += '"' + objreq.variaveis[i] + '"';
-//   }
+  for (i = 0; i < selVar.length; i++) {
+    var intIdxYear = -1;
+    
+    for (j = 0; j < objRet.length; j++) {
+      if (objRet [j].year == selVar [i].year) {
+        intIdxYear = j;
+        //console.log ("Encontrou year: ", intIdxYear);
+      }
+    }
 
-//   strFields += "]";
+    if (intIdxYear >= 0) {
+      // Já existe um registro de ano
+      console.log ("02 - intIdx já existe. Inclui varCode: ", selVar [i].varCode);
+      objRet[intIdxYear].var.push (selVar [i].varCode);
+    } else {
+      console.log ("02 - NOVO ANO. Inclui: ", selVar [i].year, selVar [i].varCode);
+      objVar = {"year":selVar [i].year,"var":[selVar [i].varCode]};
+      objRet.push (objVar);
+    }
+  }
+
+  console.log ("03 - Fim GetQyrData: ", objRet);
+
+  return objRet;
+}
+
+exports.getEmailHTMLBody = function (strUniqueID, objQryData) {
+  var strHTML = "";
+  var strVarTable = "";
+  var strManualLink = "";
+
+  console.log ("objQryData: ", objQryData);
+
+  strManualLink = "<div> Manuais IBGE:";
+
+  strVarTable = "<table style='border: 1px solid black;width:200px;text-align:center'>" +
+      "  <tr style='border: 1px solid black;width:200px;text-align:center'>" +
+      "    <th bgcolor='#98d4ff' style='border: 1px solid black;width:200px;text-align:center'>Ano</th>" +
+      "    <th bgcolor='#98d4ff' style='border: 1px solid black;width:200px;text-align:center'>Variável</th> " +
+      "  </tr>";
+
+  // Consulta para cada ano
+  console.log ("Vai verificar dados para email:")
+  for (i = 0; i < objQryData.length; i++) {
+    strManualLink += "  <br>" +
+        "  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
+        " <a href='http://" + cfg.APP_IP + "/" + cfg.APP_CENSO_MANUAL_FILES_FOLDER + "Manual" + objQryData[i].year + ".zip'> Censo " + objQryData[i].year + " </a>";
+    var varSel = objQryData[i].var;
+    // Consulta para cada variável do ano
+    for (j = 0; j < varSel.length; j++) {
+      strVarTable += "  <tr style='border: 1px solid black;width:200px;text-align:center'>" +
+          "    <td style='border: 1px solid black;width:200px;text-align:center'>" + objQryData[i].year + "</td>" +
+          "    <td style='border: 1px solid black;width:200px;text-align:center'>" + varSel [j] + "</td>" +
+          "  </tr>";
+    }
+  }
+
+  strManualLink += "</div>";
+  strVarTable += "</table>";
   
-//   //console.log("###String fields: " + strFields);
+  strHTML = "<style>" +
+      "table, th, td {" +
+      "    border: 1px solid black;" +
+      "	width:200px;" +
+      "	text-align:center;" +
+      "}" +
+      "</style>" +
+      "<h1>CEM - Plataforma de extração de dados censitários</h1>" +
+      "<h2>Arquivos disponíveis.</h2>" +
+      "<p>Para baixar os arquivos, clique nos links abaixo</p>" +
+      "<p>Dados extraídos:" +
+      "  <br>" +
+      "  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
+      " <a href='http://" + cfg.APP_IP + ":" + cfg.APP_PORT + "/files/download?file=" + strUniqueID + "&ty=0'>Arquivo de dados</a>" +
+      "  <br>" +
+      "  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
+      " <a href='http://" + cfg.APP_IP + ":" + cfg.APP_PORT + "/files/download?file=" + strUniqueID + "&ty=1'> Dicionário de dados</a>" +
+      "</p>" +
+      strManualLink +
+      "<p><u>Atenção</u>:&nbsp;<i>Os arquivos ficarão disponíveis por 24h</i></p>" +
+      "<h2>Variáveis extraídas:</h2>" +
+      strVarTable +
+      "<p><i>Atenciosamente,<br>Equipe CEM</i></p>";
+
+  return (strHTML)  ;
+}
   
-//   var arrayFields = JSON.parse (strFields);
-
-//   //console.log("###Array fields: " + arrayFields);
-
-//   var strSQLSelect = "SELECT " + arrayFields + " FROM ";
-
-//   for (i = 0; i < arrayFields.length; i++) {
-//     if (i == 0) {
-//       strMonetVars = "SELECT \'" + arrayFields [i].replace ("VAR","V") + "\'";
-//       strSQLSelect = "SELECT " + arrayFields [i].replace ("VAR","V");
-//     } else {
-//       strMonetVars += ",\'" + arrayFields [i].replace ("VAR","V") + "\'";
-//       strSQLSelect += "," + arrayFields [i].replace ("VAR","V");
-//     }
-//   }
-//   // console.log("strSQLSelect/strMonetVars" +  strSQLSelect + " -- " + strMonetVars);
-  
-//   strMonetVars += " UNION ALL ";    console.log("New Schema: " + '"' + sSchema + '"');
-  
-
-//   strSQLSelect += " FROM ";
-
-//   // console.log("strSchemaMonet Ano: " + objreq.ano);
-      
-//   // console.log("Executa obtemSchemaMonet : " + exports.obtemSchemaMonet (objreq.ano));
-//   var strSchemaMonet = exports.obtemSchemaMonet (objreq.ano);
-//   // console.log("strSchemaMonet: " + strSchemaMonet);
-
-//   if (cfg.DB_SERVER == "internuvem") {
-//      strSQLSelect += strSchemaMonet + "." + strCollection;
-//   } else {    console.log("New Schema: " + '"' + sSchema + '"');
-  
-//      if (strCollection == "tDom") {
-//        strSQLSelect += "domicilio"
-//      } else {
-//         strSQLSelect += "pessoa"
-//      }
-//   }
-
-//   var strSQLWhere = "";
-//   if (objreq.estado) {
-//     var varEstado = exports.obtemVarEstado (objreq.ano);
-//     strSQLWhere = " WHERE " + varEstado.replace ("VAR","V") + "=" + objreq.estado;
-//   }
-//   console.log("SQL Result: " + strSQLSelect + strSQLWhere + " LIMIT 10");
-//   return strSQLSelect + strSQLWhere + " LIMIT 10";
