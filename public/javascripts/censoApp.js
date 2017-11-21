@@ -50,12 +50,6 @@ censoApp.controller('submitController',['$scope', '$http', function ($scope, $ht
         .then(function (response) {
             console.log ("data");
             console.log (response.data);
-            //console.log ("data[0].colleciotn");
-            //console.log (response.data[0].collection);
-            //console.log ("data[0].colleciotn.variable");
-            //console.log (response.data[0].collection.variable);
-            //console.log ("data[0].colleciotn.variable.category");
-            //console.log (response.data[0].collection.variable.category);
             console.log ("data[0].==> DBNAME ==> ", response.data[0].dbName);
 
             $scope.data = [];
@@ -183,18 +177,138 @@ censoApp.controller('submitController',['$scope', '$http', function ($scope, $ht
             return;
         }
 
+
+        /*
+var strHTML = "<div style='height:185px;width:600px;overflow-x:auto'>" +
+    "<form> First name: <input id='inputEmail' type='text' name='email' value='E-mail'></input></form>" +
+	"<table id = 'tabSelectedVariablesModal' class='table table-striped table-condensed' size='10px' style='height:0px;font-size: 11px'>" +
+	"<tr>" +
+		"<th style='vertical-align:middle;'>Ano</th>" +
+		"<th style='vertical-align:middle;'>Código</th>" +
+	"</tr>" +
+	"<tr>" +
+		"<td style='vertical-align:middle;'>Year</td>" +
+		"<td style='vertical-align:middle;'>Label</td>" +
+	"</tr>" +
+	"<tr>" +
+		"<td style='vertical-align:middle;'>Year1</td>" +
+		"<td style='vertical-align:middle;'>Label1</td>" +
+	"</tr>" +
+	"</table>" +
+"</div>";
+*/
+        
+        $scope.parameters.email = "";
+
+        var dialog = bootbox.dialog({
+            title: 'Prévia e geração do arquivo',
+            message: '<p><i class="fa fa-spin fa-spinner"></i>carregando dados...</p>',
+            buttons: {
+                cancel: {
+                    label: "Cancelar",
+                    className: 'btn-danger',
+                    callback: function(){
+                        console.log('Custom cancel clicked');
+                    }
+                },
+                /*
+                noclose: {
+                    label: "Custom button",
+                    className: 'btn-warning',
+                    callback: function(){
+                        console.log('Custom button clicked');
+                        return false;
+                    }
+                },
+                */
+                ok: {
+                    label: "Gerar arquivo",
+                    className: 'btn-info',
+                    callback: function(){
+                        console.log('Custom OK clicked', $("#inputEmail").val());
+                        strEmailRet = $("#inputEmail").val();
+                        $scope.parameters.email = strEmailRet;
+                        // Gera arquivo e envia e-mail
+                        $scope.submitGeraArquivo();
+                    }
+                }
+            }
+        });
+        dialog.init(function(){
+            /*
+            setTimeout(function(){
+                dialog.find('.bootbox-body').html('I was loaded after the dialog was shown!' + strHTML);
+            }, 3000);
+            */
+            // Atualiza informações na página principal
+            $scope.msgConfirmaGera = "";
+            $scope.baixarArq = "";
+            $scope.texto = "";
+            $scope.dataQuery = {};
+            // Preenche dados do arquivo na tela
+            var strURL = "/queryMonet";
+            $http({
+                method: 'post',
+                url: strURL,
+                data: $scope.parameters
+            }).then(function(httpResponse){
+                // this callback will be called asynchronously
+                // when the response is available
+                $scope.dataQuery = httpResponse.data;
+                //console.log(httpResponse.data);
+                console.log('\n\nQuery executed successfully!!');
+                // Gera tabela de amostras:
+                var strHTMLVar = "<div style='height:350px;width:450px;overflow-x:auto'>" +
+                    "<form> Insira o e-mail destino: <input id='inputEmail' type='text' name='email' value=''></input></form>" +
+                    "<br>" +
+                    "<table id = 'tabSelectedVariablesModal' class='table table-striped table-condensed' size='10px' style='height:0px;font-size: 11px'>" +
+                    "<tr>";
+                // Monta cabeçalho.
+
+                var objCabecalho = httpResponse.data [0];
+                var objKey = [];
+                for (fieldName in objCabecalho) {
+                    console.log ("Campo: ", fieldName);
+                    strHTMLVar += "<th style='vertical-align:middle;'>" + fieldName + "</th>";
+                    objKey.push (fieldName);
+                }
+
+                strHTMLVar += "</tr>";
+
+                // Monta linhas
+                for (i = 0; i < httpResponse.data.length; i++) {
+                    strHTMLVar += "<tr>";
+                    console.log (i, " - ", httpResponse.data[i]);
+                    for (j = 0; j < objKey.length; j++) {
+                        strHTMLVar += "<td style='vertical-align:middle;'>" + httpResponse.data[i][objKey[j]] +
+                                    "</td>";
+                    }
+                    strHTMLVar += "</tr>";
+                }
+                
+                strHTMLVar += "</table>" +
+                            "</div>";
+
+                dialog.find('.bootbox-body').html(strHTMLVar);
+
+
+            }, function(httpResponse) {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                $scope.msg = 'Erro na execução da Query'; 
+            });
+
+            
+        });        
+        
+        /**
         // Atualiza informações na página principal
-        $scope.msgConfirmaGera = "Para gerar o arquivo, clique em \"Gerar arquivo\"";
+        $scope.msgConfirmaGera = "";
         $scope.baixarArq = "";
         $scope.texto = "";
         $scope.dataQuery = {};
         // Preenche dados do arquivo na tela
-        var strURL = "";
-        if (strCfgBD == 'monet') {
-            strURL = "/queryMonet";
-        } else {
-            strURL = "/queryMongo";
-        }
+        var strURL = "/queryMonet";
         $http({
             method: 'post',
             url: strURL,
@@ -204,12 +318,47 @@ censoApp.controller('submitController',['$scope', '$http', function ($scope, $ht
             // when the response is available
             $scope.dataQuery = httpResponse.data;
             //console.log(httpResponse.data);
-            console.log('Query executed successfully!!');
+            console.log('\n\nQuery executed successfully!!');
+            // Gera tabela de amostras:
+            var strHTMLVar = "<div style='height:185px;width:600px;overflow-x:auto'>" +
+                "<form> First name: <input id='inputEmail' type='text' name='email' value='E-mail'></input></form>" +
+                "<table id = 'tabSelectedVariablesModal' class='table table-striped table-condensed' size='10px' style='height:0px;font-size: 11px'>" +
+                "<tr>";
+            // Monta cabeçalho.
+
+            var objCabecalho = httpResponse.data [0];
+            var objKey = [];
+            for (fieldName in objCabecalho) {
+                console.log ("Campo: ", fieldName);
+                strHTMLVar += "<th style='vertical-align:middle;'>" + fieldName + "</th>";
+                objKey.push (fieldName);
+            }
+
+            strHTMLVar += "</tr>";
+
+            // Monta linhas
+            for (i = 0; i < httpResponse.data.length; i++) {
+                strHTMLVar += "<tr>";
+                console.log (i, " - ", httpResponse.data[i]);
+                for (j = 0; j < objKey.length; j++) {
+                    strHTMLVar += "<td style='vertical-align:middle;'>" + httpResponse.data[i][objKey[j]] +
+                                  "</td>";
+                }
+                strHTMLVar += "</tr>";
+            }
+            
+            strHTMLVar += "</table>" +
+                        "</div>";
+
+
+
+
         }, function(httpResponse) {
             // called asynchronously if an error occurs
             // or server returns response with an error status.
             $scope.msg = 'Erro na execução da Query'; 
         });
+        **/
     }
 
     $scope.submitSelect = function(){
@@ -217,6 +366,7 @@ censoApp.controller('submitController',['$scope', '$http', function ($scope, $ht
         console.log($scope.parameters);
 
         // Consistência. Verifica se há Variáveis de Tema selecionadas (obrigatórios)
+        
         if ($scope.parameters.variaveis == null || $scope.parameters.variaveis[0] == null) {
             bootbox.alert ({
                 size: "small",
@@ -224,13 +374,13 @@ censoApp.controller('submitController',['$scope', '$http', function ($scope, $ht
                 message: "<h4>Não há variáveis de tema selecionadas</h4>"});
             return;
         }
+        
 
         if (!$scope.parameters.selectedVariables) {
             console.log ("Vai criar selectedVariables")
             $scope.parameters.selectedVariables = [];
         }
-        
-      
+
         for (i=0; i < $scope.parameters.variaveis.length; i++) {
             var objVar = {};
             objVar = JSON.parse($scope.parameters.variaveis[i]).collection.variable;
@@ -272,6 +422,73 @@ censoApp.controller('submitController',['$scope', '$http', function ($scope, $ht
             return;
         }
         
+        //$scope.parameters.email = "";
+
+        /*
+        bootbox.prompt ({
+            title: "Favor inserir e-mail destino:" + $scope.parameters.email,
+            inputType: "email",
+            callback: function (result) {
+                if (!result) {
+                    console.log("CANCELADO!");
+                } else {
+        */
+                    console.log("Vai gerar!!");
+                    var strEmail = $scope.parameters.email;
+                    // Atualiza informações na página principal
+                    $scope.msgConfirmaGera = "Processando...";
+                    $scope.baixarArq = "";
+
+                    var strChosenDB = '/files/geraArqMonet';
+                    //$scope.parameters.email = strEmail;
+                    
+                    $http({
+                        method: 'post',
+                        url: strChosenDB,
+                        data: $scope.parameters
+                    }).then(function(httpResponse){
+                        // this callback will be called asynchronously
+                        // when the response is available
+                        //var resultado = httpResponse.data;
+                        var resultado = JSON.parse (httpResponse.data);
+                        if (resultado.resultado == 1) {
+                            // Geração do arquivo OK.
+                            console.log ("Arquivo gerado! : " + resultado.file);
+                            // Arquivo gerado. Atualiza informações na tela.
+                            $scope.dataFile = httpResponse.data;
+                            //$scope.texto = resultado.file;
+                            $scope.texto = "";
+                            $scope.msgConfirmaGera = "Link para download será enviado para o e-mail:";
+                            $scope.baixarArq = strEmail;
+                            //$scope.fileLink = "files/download/?file=" + resultado.file;
+                            $scope.fileLink = "";
+                        } else {
+                            // Erro na geração do arquivo.
+                            console.log ("Erro na geração! : " + resultado.file);
+                            $scope.msgConfirmaGera = "Arquivo não gerado";
+                            $scope.baixarArq = resultado.file.substring (0,50);
+                            $scope.texto = "";
+                            $scope.fileLink = "" + resultado.file;
+                        }
+
+                    }, function(httpResponse) {
+                        // called asynchronously if an error occurs
+                        // or server returns response with an error status.
+                        $scope.msg = 'Erro na geração do arquivo:('; 
+                    });
+        /*
+                }
+
+            }
+        }); // bootbox
+        */
+    } //$scope.submitGeraArquivo
+
+    $scope.submitGeraArquivo2 = function() {
+        console.log('clicked submit Gera Arquivo2');
+        console.log($scope.parameters);
+
+        
         $scope.parameters.email = "";
 
         bootbox.prompt ({
@@ -287,9 +504,9 @@ censoApp.controller('submitController',['$scope', '$http', function ($scope, $ht
                     $scope.msgConfirmaGera = "Processando...";
                     $scope.baixarArq = "";
 
-                    var strChosenDB = '/files/geraArqMonet';
+                    var strChosenDB = '/files/geraArqMonet-2';
                     if (strCfgBD == "monet") {
-                        strChosenDB = '/files/geraArqMonet';
+                        strChosenDB = '/files/geraArqMonet-2';
                     } else {
                         strChosenDB = '/files/geraArqMongo';
                     }
@@ -334,8 +551,7 @@ censoApp.controller('submitController',['$scope', '$http', function ($scope, $ht
 
             }
         });
-
-    }
+    } //$scope.submitGeraArquivo2
 
     $scope.$on ("clearDataQuery", function(event, data) {
         console.log ("Clear Data Query")

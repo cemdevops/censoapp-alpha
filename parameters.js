@@ -22,13 +22,13 @@ config.DB_INIC = "monet";
 config.DB_SERVER = "internuvem";
 //config.DB_SERVER = "local";
 
-//config.APP_IP = "200.144.244.241";
-config.APP_IP = "localhost";
-config.APP_PORT = "3003";
+config.APP_IP = "200.144.244.241";
+//config.APP_IP = "localhost";
+config.APP_PORT = "3000";
 
 //config.MONGO_IP = "localhost";
-config.MONGO_IP = "172.16.1.94";
-//config.MONGO_IP = "200.144.244.241";
+//config.MONGO_IP = "172.16.1.94";
+config.MONGO_IP = "200.144.244.241";
 
 config.MONGO_PORT = "27017";
 
@@ -54,7 +54,7 @@ config.MONGO_URL_W = "mongodb://" + config.MONGO_APP_W_USR + config.MONGO_APP_W_
 
 config.MONGO_DB_GERAL = "tGeral";
 config.MONGO_DB_THEMES = "tThemes";
-config.MONGO_DB_QUEUE = "tQueue";
+config.MONGO_DB_QUEUE = "tQueue05";
 config.MONGO_DB_APP_CENSO = "appCenso";
 
 config.MONET_DB_HOST = "200.144.244.241";
@@ -66,8 +66,11 @@ config.MONET_DB_PASSWD = cfg.MONET_DB_PASSWD;
 
 //config.MONET_DB_OUTPUT_FOLDER = '/home/breno/meanprojects/censoappmdb/output/';
 //config.MONET_DB_OUTPUT_FOLDER = '/home/ubuntu/meanprojects/censoappmdb/output/';
-config.MONET_DB_OUTPUT_FOLDER = '/datacem/output/';
+config.MONET_DB_OUTPUT_FOLDER = '/mnt/datacem2/output/';
 //config.MONET_DB_OUTPUT_FOLDER = '/home/breno/censoProject/output/';
 
+config.APP_AUX_FILES_FOLDER = '/mnt/datacem2/output/auxfiles/';
+// Apache folder
+config.APP_CENSO_MANUAL_FILES_FOLDER = 'downloads/';
 config.QUEUE_CHECK_INTERVAL_SECONDS = 3
-config.MAX_CONCURRENT_PROCCESS = 2
+config.MAX_CONCURRENT_PROCCESS = 3
