@@ -436,7 +436,17 @@ var strHTML = "<div style='height:185px;width:600px;overflow-x:auto'>" +
             alert("Favor selecionar um formato de dados");
             return;
         }
-        
+
+        // Informar que tipos de informação será enviado para o email
+        bootbox.alert ({
+            size: "medium",
+            title: "Obrigada por usar o App!",
+            message: "<div class='alert alert-info' role='alert'>" +
+            "  Você receberá um email contendo links para baixar o arquivo gerado com as variáveis solicitadas, " +
+            "o dicionário de dados e  os manuais de IBGE correspondentes aos anos dos censos que você selecionou" +
+            "</div>"
+        });
+
         //$scope.parameters.email = "";
 
         /*

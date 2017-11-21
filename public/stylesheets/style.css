@@ -175,3 +175,7 @@ a, .mdl-accordion, .mdl-button, .mdl-card, .mdl-checkbox, .mdl-dropdown-menu, .m
     background-color: #343a40;
 
 }
+
+.card {
+    border: 3px solid rgba(0,0,0,.125);
+}
