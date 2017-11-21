@@ -165,9 +165,12 @@ censoApp.controller('submitController',['$scope', '$http', function ($scope, $ht
         */
         if ($scope.parameters.selectedVariables == null || $scope.parameters.selectedVariables[0] == null) {
             bootbox.alert ({ 
-                size: "small",
+                size: "medium",
                 title: "Visualizar variáveis",
-                message: "<h4>Não há variáveis selecionadas!</h4>"});
+                message: "<div class='alert alert-warning' role='alert'>" +
+                "  Não há variáveis selecionadas!" +
+                "</div>"
+            });
             // alert("Favor selecionar uma ou mais variáveis");
             return;
         }
@@ -258,9 +261,13 @@ var strHTML = "<div style='height:185px;width:600px;overflow-x:auto'>" +
                 //console.log(httpResponse.data);
                 console.log('\n\nQuery executed successfully!!');
                 // Gera tabela de amostras:
-                var strHTMLVar = "<div style='height:350px;width:450px;overflow-x:auto'>" +
-                    "<form> Insira o e-mail destino: <input id='inputEmail' type='text' name='email' value=''></input></form>" +
-                    "<br>" +
+                var strHTMLVar = "<div style='height:500px;width:100%;overflow-x:auto'>" +
+                    "<form>" +
+                    "<div class='form-group'>" +
+                    " <input id='inputEmail' type='email' name='email' value='' class='form-control' aria-describedby='emailHelp' placeholder='Insira o e-mail destino'>" +
+                    " <small id='emailHelp' class='form-text text-muted'>Não compartilharemos seu email com ninguém.</small>" +
+                    "</div>" +
+                    "<div class='form-group'>" +
                     "<table id = 'tabSelectedVariablesModal' class='table table-striped table-condensed' size='10px' style='height:0px;font-size: 11px'>" +
                     "<tr>";
                 // Monta cabeçalho.
@@ -287,6 +294,8 @@ var strHTML = "<div style='height:185px;width:600px;overflow-x:auto'>" +
                 }
                 
                 strHTMLVar += "</table>" +
+                            "</div>"+
+                            "</form>"+
                             "</div>";
 
                 dialog.find('.bootbox-body').html(strHTMLVar);
@@ -369,9 +378,12 @@ var strHTML = "<div style='height:185px;width:600px;overflow-x:auto'>" +
         
         if ($scope.parameters.variaveis == null || $scope.parameters.variaveis[0] == null) {
             bootbox.alert ({
-                size: "small",
+                size: "medium",
                 title: "Seleção de variáveis",
-                message: "<h4>Não há variáveis de tema selecionadas</h4>"});
+                message: "<div class='alert alert-warning' role='alert'>" +
+                "  Não há variáveis de tema selecionadas" +
+                "</div>"
+            });
             return;
         }
         
@@ -411,9 +423,12 @@ var strHTML = "<div style='height:185px;width:600px;overflow-x:auto'>" +
 
         if ($scope.parameters.selectedVariables == null || $scope.parameters.selectedVariables[0] == null) {
             bootbox.alert ({ 
-                size: "small",
+                size: "medium",
                 title: "Gerar arquivo",
-                message: "<h4>Não há variáveis selecionadas!</h4>"});
+                message: "<div class='alert alert-warning' role='alert'>" +
+                "  Não há variáveis selecionadas!" +
+                "</div>"
+            });
             return;
         }
         
