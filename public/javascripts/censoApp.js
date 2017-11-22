@@ -180,27 +180,6 @@ censoApp.controller('submitController',['$scope', '$http', function ($scope, $ht
             return;
         }
 
-
-        /*
-var strHTML = "<div style='height:185px;width:600px;overflow-x:auto'>" +
-    "<form> First name: <input id='inputEmail' type='text' name='email' value='E-mail'></input></form>" +
-	"<table id = 'tabSelectedVariablesModal' class='table table-striped table-condensed' size='10px' style='height:0px;font-size: 11px'>" +
-	"<tr>" +
-		"<th style='vertical-align:middle;'>Ano</th>" +
-		"<th style='vertical-align:middle;'>Código</th>" +
-	"</tr>" +
-	"<tr>" +
-		"<td style='vertical-align:middle;'>Year</td>" +
-		"<td style='vertical-align:middle;'>Label</td>" +
-	"</tr>" +
-	"<tr>" +
-		"<td style='vertical-align:middle;'>Year1</td>" +
-		"<td style='vertical-align:middle;'>Label1</td>" +
-	"</tr>" +
-	"</table>" +
-"</div>";
-*/
-        
         $scope.parameters.email = "";
 
         var dialog = bootbox.dialog({
@@ -214,23 +193,16 @@ var strHTML = "<div style='height:185px;width:600px;overflow-x:auto'>" +
                         console.log('Custom cancel clicked');
                     }
                 },
-                /*
-                noclose: {
-                    label: "Custom button",
-                    className: 'btn-warning',
-                    callback: function(){
-                        console.log('Custom button clicked');
-                        return false;
-                    }
-                },
-                */
                 ok: {
                     label: "Gerar arquivo",
                     className: 'btn-info',
                     callback: function(){
-                        console.log('Custom OK clicked', $("#inputEmail").val());
                         strEmailRet = $("#inputEmail").val();
+                        strFileType = $("input[name=formatoDados]:checked").val();
+                        console.log('Custom OK clicked', strEmailRet, " - ", strFileType);
                         $scope.parameters.email = strEmailRet;
+                        $scope.parameters.formatoDados = strFileType;
+
                         // Gera arquivo e envia e-mail
                         $scope.submitGeraArquivo();
                     }
@@ -238,11 +210,6 @@ var strHTML = "<div style='height:185px;width:600px;overflow-x:auto'>" +
             }
         });
         dialog.init(function(){
-            /*
-            setTimeout(function(){
-                dialog.find('.bootbox-body').html('I was loaded after the dialog was shown!' + strHTML);
-            }, 3000);
-            */
             // Atualiza informações na página principal
             $scope.msgConfirmaGera = "";
             $scope.baixarArq = "";
@@ -294,9 +261,23 @@ var strHTML = "<div style='height:185px;width:600px;overflow-x:auto'>" +
                 }
                 
                 strHTMLVar += "</table>" +
-                            "</div>"+
-                            "</form>"+
+                            "</div>" +
+                            "</form>" +
+                            "</div>" +
+                            "<div style='text-align:center'>" +
+//                            " <fieldset style='size:10'>" +
+                            "   <h6><b>Opções de arquivo de saida</b></h6>" +
+                            "   <div>" +
+                            "	  <input id = 'radComma' type='radio' name='formatoDados' value='csv-commas' checked>" +
+                            "		&nbsp;CSV delimitado por vírgula" +
+                            "	  </input>" +
+                            "	  &nbsp;&nbsp;" +
+                            "	  <input id = 'radSemi' type='radio' name='formatoDados' value='csv-semicolon'>" +
+                            "		&nbsp;CSV delimitado por ponto e vírgula" +
+                            "	  </input>" +
+                            "   </div>" +
                             "</div>";
+                            
 
                 dialog.find('.bootbox-body').html(strHTMLVar);
 
@@ -309,65 +290,6 @@ var strHTML = "<div style='height:185px;width:600px;overflow-x:auto'>" +
 
             
         });        
-        
-        /**
-        // Atualiza informações na página principal
-        $scope.msgConfirmaGera = "";
-        $scope.baixarArq = "";
-        $scope.texto = "";
-        $scope.dataQuery = {};
-        // Preenche dados do arquivo na tela
-        var strURL = "/queryMonet";
-        $http({
-            method: 'post',
-            url: strURL,
-            data: $scope.parameters
-        }).then(function(httpResponse){
-            // this callback will be called asynchronously
-            // when the response is available
-            $scope.dataQuery = httpResponse.data;
-            //console.log(httpResponse.data);
-            console.log('\n\nQuery executed successfully!!');
-            // Gera tabela de amostras:
-            var strHTMLVar = "<div style='height:185px;width:600px;overflow-x:auto'>" +
-                "<form> First name: <input id='inputEmail' type='text' name='email' value='E-mail'></input></form>" +
-                "<table id = 'tabSelectedVariablesModal' class='table table-striped table-condensed' size='10px' style='height:0px;font-size: 11px'>" +
-                "<tr>";
-            // Monta cabeçalho.
-
-            var objCabecalho = httpResponse.data [0];
-            var objKey = [];
-            for (fieldName in objCabecalho) {
-                console.log ("Campo: ", fieldName);
-                strHTMLVar += "<th style='vertical-align:middle;'>" + fieldName + "</th>";
-                objKey.push (fieldName);
-            }
-
-            strHTMLVar += "</tr>";
-
-            // Monta linhas
-            for (i = 0; i < httpResponse.data.length; i++) {
-                strHTMLVar += "<tr>";
-                console.log (i, " - ", httpResponse.data[i]);
-                for (j = 0; j < objKey.length; j++) {
-                    strHTMLVar += "<td style='vertical-align:middle;'>" + httpResponse.data[i][objKey[j]] +
-                                  "</td>";
-                }
-                strHTMLVar += "</tr>";
-            }
-            
-            strHTMLVar += "</table>" +
-                        "</div>";
-
-
-
-
-        }, function(httpResponse) {
-            // called asynchronously if an error occurs
-            // or server returns response with an error status.
-            $scope.msg = 'Erro na execução da Query'; 
-        });
-        **/
     }
 
     $scope.submitSelect = function(){
@@ -375,7 +297,6 @@ var strHTML = "<div style='height:185px;width:600px;overflow-x:auto'>" +
         console.log($scope.parameters);
 
         // Consistência. Verifica se há Variáveis de Tema selecionadas (obrigatórios)
-        
         if ($scope.parameters.variaveis == null || $scope.parameters.variaveis[0] == null) {
             bootbox.alert ({
                 size: "medium",
@@ -386,7 +307,6 @@ var strHTML = "<div style='height:185px;width:600px;overflow-x:auto'>" +
             });
             return;
         }
-        
 
         if (!$scope.parameters.selectedVariables) {
             console.log ("Vai criar selectedVariables")
@@ -449,7 +369,7 @@ var strHTML = "<div style='height:185px;width:600px;overflow-x:auto'>" +
 
         //$scope.parameters.email = "";
 
-        /*
+        /* Retirado bootbox deste ponto porque agora é enviado da janela de amostra do arquivo
         bootbox.prompt ({
             title: "Favor inserir e-mail destino:" + $scope.parameters.email,
             inputType: "email",
@@ -458,49 +378,49 @@ var strHTML = "<div style='height:185px;width:600px;overflow-x:auto'>" +
                     console.log("CANCELADO!");
                 } else {
         */
-                    console.log("Vai gerar!!");
-                    var strEmail = $scope.parameters.email;
-                    // Atualiza informações na página principal
-                    $scope.msgConfirmaGera = "Processando...";
-                    $scope.baixarArq = "";
+        console.log("Vai gerar!!");
+        var strEmail = $scope.parameters.email;
+        // Atualiza informações na página principal
+        //$scope.msgConfirmaGera = "Processando...";
+        $scope.baixarArq = "";
 
-                    var strChosenDB = '/files/geraArqMonet';
-                    //$scope.parameters.email = strEmail;
-                    
-                    $http({
-                        method: 'post',
-                        url: strChosenDB,
-                        data: $scope.parameters
-                    }).then(function(httpResponse){
-                        // this callback will be called asynchronously
-                        // when the response is available
-                        //var resultado = httpResponse.data;
-                        var resultado = JSON.parse (httpResponse.data);
-                        if (resultado.resultado == 1) {
-                            // Geração do arquivo OK.
-                            console.log ("Arquivo gerado! : " + resultado.file);
-                            // Arquivo gerado. Atualiza informações na tela.
-                            $scope.dataFile = httpResponse.data;
-                            //$scope.texto = resultado.file;
-                            $scope.texto = "";
-                            $scope.msgConfirmaGera = "Link para download será enviado para o e-mail:";
-                            $scope.baixarArq = strEmail;
-                            //$scope.fileLink = "files/download/?file=" + resultado.file;
-                            $scope.fileLink = "";
-                        } else {
-                            // Erro na geração do arquivo.
-                            console.log ("Erro na geração! : " + resultado.file);
-                            $scope.msgConfirmaGera = "Arquivo não gerado";
-                            $scope.baixarArq = resultado.file.substring (0,50);
-                            $scope.texto = "";
-                            $scope.fileLink = "" + resultado.file;
-                        }
+        var strChosenDB = '/files/geraArqMonet';
+        //$scope.parameters.email = strEmail;
+        
+        $http({
+            method: 'post',
+            url: strChosenDB,
+            data: $scope.parameters
+        }).then(function(httpResponse){
+            // this callback will be called asynchronously
+            // when the response is available
+            //var resultado = httpResponse.data;
+            var resultado = JSON.parse (httpResponse.data);
+            if (resultado.resultado == 1) {
+                // Geração do arquivo OK.
+                console.log ("Arquivo gerado! : " + resultado.file);
+                // Arquivo gerado. Atualiza informações na tela.
+                $scope.dataFile = httpResponse.data;
+                //$scope.texto = resultado.file;
+                $scope.texto = "";
+                //$scope.msgConfirmaGera = "Link para download será enviado para o e-mail:";
+                //$scope.baixarArq = strEmail;
+                //$scope.fileLink = "files/download/?file=" + resultado.file;
+                $scope.fileLink = "";
+            } else {
+                // Erro na geração do arquivo.
+                console.log ("Erro na geração! : " + resultado.file);
+                $scope.msgConfirmaGera = "Arquivo não gerado";
+                $scope.baixarArq = resultado.file.substring (0,50);
+                $scope.texto = "";
+                $scope.fileLink = "" + resultado.file;
+            }
 
-                    }, function(httpResponse) {
-                        // called asynchronously if an error occurs
-                        // or server returns response with an error status.
-                        $scope.msg = 'Erro na geração do arquivo:('; 
-                    });
+        }, function(httpResponse) {
+            // called asynchronously if an error occurs
+            // or server returns response with an error status.
+            $scope.msg = 'Erro na geração do arquivo:('; 
+        });
         /*
                 }
 
@@ -509,10 +429,10 @@ var strHTML = "<div style='height:185px;width:600px;overflow-x:auto'>" +
         */
     } //$scope.submitGeraArquivo
 
+    // Função usada apenas para teste de submissão
     $scope.submitGeraArquivo2 = function() {
         console.log('clicked submit Gera Arquivo2');
         console.log($scope.parameters);
-
         
         $scope.parameters.email = "";
 
@@ -530,12 +450,6 @@ var strHTML = "<div style='height:185px;width:600px;overflow-x:auto'>" +
                     $scope.baixarArq = "";
 
                     var strChosenDB = '/files/geraArqMonet-2';
-                    if (strCfgBD == "monet") {
-                        strChosenDB = '/files/geraArqMonet-2';
-                    } else {
-                        strChosenDB = '/files/geraArqMongo';
-                    }
-
                     $scope.parameters.email = strEmail;
                     
                     $http({
@@ -543,8 +457,7 @@ var strHTML = "<div style='height:185px;width:600px;overflow-x:auto'>" +
                         url: strChosenDB,
                         data: $scope.parameters
                     }).then(function(httpResponse){
-                        // this callback will be called asynchronously
-                        // when the response is available
+                        // this callback will be called asynchronously when the response is available
                         //var resultado = httpResponse.data;
                         var resultado = JSON.parse (httpResponse.data);
                         if (resultado.resultado == 1) {
@@ -552,10 +465,10 @@ var strHTML = "<div style='height:185px;width:600px;overflow-x:auto'>" +
                             console.log ("Arquivo gerado! : " + resultado.file);
                             // Arquivo gerado. Atualiza informações na tela.
                             $scope.dataFile = httpResponse.data;
-                            $scope.baixarArq = strEmail;
+                            //$scope.baixarArq = strEmail;
                             //$scope.texto = resultado.file;
                             $scope.texto = "";
-                            $scope.msgConfirmaGera = "link para download será enviado para o e-mail:";
+                            //$scope.msgConfirmaGera = "link para download será enviado para o e-mail:";
                             //$scope.fileLink = "files/download/?file=" + resultado.file;
                             $scope.fileLink = "";
                         } else {
@@ -769,6 +682,64 @@ censoApp.controller('tablesController', function ($scope, $rootScope, $http) {
             objTabela = $scope.parameters;
             objParam = {params:objTabela};
             console.log(objParam.params);
+            $scope.$emit ("callFillThemes", objParam);
+            $scope.$emit ("callFillVar", objParam);
+            $scope.$emit ("clearDataQuery", objParam);
+        }
+    }
+
+    // Função para limpar dados na tela.
+    $scope.submitLimpa = function () {
+        console.log ("submitLimpa", $scope.parameters.tabela);
+        if (($scope.parameters.tabelaAnt) || ($scope.parameters.tabelaAnt == "")) {
+            console.log ("Tem tabela anterior: ", $scope.parameters.tabelaAnt);
+        } else {
+            console.log ("Não tem tabela anterior. Vai criar.");
+            $scope.parameters.tabelaAnt = "";
+        }
+        // Verifica se existem variáveis selecionadas:
+        if (($scope.parameters.selectedVariables != null) && 
+            ($scope.parameters.selectedVariables[0] != null)) {
+            bootbox.confirm({
+                title: "Reinício dos dados da aplicação",
+                message: "Há variáveis selecionadas. O procedimento de reinício descartará essas variáveis!",
+                buttons: {
+                    confirm: {
+                        label: 'Continua',
+                        className: 'btn-success'
+                    },
+                    cancel: {
+                        label: 'Cancela',
+                        className: 'btn-danger'
+                    }
+                },
+                callback: function (result) {
+                    if (result) {
+                        // Apaga variáveis selecionadas;
+                        console.log('RESULTADO MUDANÇA DADOS: Apaga selecionados 1' + result);
+                        $scope.parameters.tabela = "";
+                        objTabela = $scope.parameters;
+                        objParam = {params:objTabela};
+                        //console.log(objParam.params);
+                        $scope.parameters.selectedVariables = [];
+                        //$scope.parameters.tabelaAnt = $scope.parameters.tabela;
+                        $scope.$emit ("callFillThemes", objParam);
+                        $scope.$emit ("callFillVar", objParam);
+                        $scope.$emit ("clearDataQuery", objParam);
+                    } else {
+                        // volta tipo de dados anterior
+                        console.log('RESULTADO MUDANÇA DADOS: Volta anterior e retorna. ' + result);
+                        $scope.parameters.tabela = $scope.parameters.tabelaAnt;
+                        return;
+                    }
+                }
+            });
+        } else {
+            $scope.parameters.tabelaAnt = $scope.parameters.tabela;
+            $scope.parameters.tabela = "";
+            objTabela = $scope.parameters;
+            objParam = {params:objTabela};
+            //console.log(objParam.params);
             $scope.$emit ("callFillThemes", objParam);
             $scope.$emit ("callFillVar", objParam);
             $scope.$emit ("clearDataQuery", objParam);

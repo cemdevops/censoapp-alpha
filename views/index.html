@@ -368,7 +368,7 @@
                             <td style="vertical-align:middle;">{{item.year}}</td>
                             <td style="vertical-align:middle;width:30px;">{{item.varCode}}</td>
                             <td style="vertical-align:middle;width:5px;">
-                                <a href="" data-toggle="modal" data-target="#myModal"><i title="Informação detalhada da variável" style="font-size: 1.3em;" class="fa fa-info-circle text-info"></i>
+                                <a href="" data-toggle="modal" data-target="#myModal"><i title="Informação detalhada da variável" style="font-size: 1.3em;" class="fa fa-info-circle text-info" ng-click="InfoVar(item)"></i>
                                 <!--<span data-toggle="tooltip" title="Clique para detalhes da variável {{item.varCode}}" class="glyphicon glyphicon-question-sign" ng-click="InfoVar(item)">
                                     <b>?</b>
                                 </span>-->
@@ -417,7 +417,7 @@
                         
             <!-- <div class="form-inline"> -->
 
-                <div style="float: left;">
+                <div style="display:none">
                     <h6>Opções de arquivo de saida</h6>
                     <br><br>
                     <input id = "radioCSVComma" type="radio" name="formatoDados" ng-model="parameters.formatoDados" value="csv-commas" checked="checked">
@@ -433,13 +433,15 @@
                     <!--
                     <input id="teste" class="form-group btn btn-info" style="margin-left:200px;width:120px" type="submit" value="teste rem" ng-click="submitTESTErem()">
                     -->
-                    <input id="btnClearAllFields" class="form-group btn btn-secondary" style="width:240px" type="submit" value="Limpar todos os campos" ng-click="submitQuery()" onclick="submitLimpa()">
-                    </input>
+                    <div ng-controller="tablesController" style="">
+                        <input id="btnClearAllFields" class="form-group btn btn-secondary" style="width:240px" type="submit" value="Limpar todos os campos" ng-click="submitLimpa()">
+                        </input>
+                    </div>
 
                     <input id="btnConfSolic" class="form-group btn btn-info" style="width:240px" type="submit" value="Visualizar e gerar arquivo" ng-click="submitQuery()" onclick="EnableGera()">
                     </input>
                     
-                    <input id="btnGeraArq" class="form-group btn btn-primary" style="width:120px;display:none" type="submit" value="Gerar arquivo" ng-click="submitGeraArquivo()" disabled=""  onclick="disableGera()">
+                    <input id="btnGeraArq" class="form-group btn btn-primary" style="display:none" type="submit" value="Gerar arquivo" ng-click="submitGeraArquivo()" disabled=""  onclick="disableGera()">
                     </input>
                     <!--
                     <input id="btnGeraArq2" class="form-group btn btn-primary" style="margin-left:10px;width:120px" type="submit" value="Gerar arq." ng-click="submitGeraArquivo2()">
