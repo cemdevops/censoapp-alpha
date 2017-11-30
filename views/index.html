@@ -44,7 +44,7 @@
 <body  ng-app="censoApp" ng-controller="submitController">
 <header>
     <!-- Image and text -->
-    <nav class="navbar navbar-expand-md fixed-top navbar-dark bg-blue-intense" >
+    <nav class="navbar navbar-expand-md fixed-top navbar-dark bg-dark-green">
         <!-- Section: toogler -->
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo01"
                 aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
@@ -53,23 +53,23 @@
         <!-- End Section: toogler -->
         <!-- Section: logo -->
         <a class="navbar-brand" href="http://web.fflch.usp.br/centrodametropole/">
-            <img src="images/logo-cem-nome-completo-v.jpg" height="70" class="d-inline-block align-top" alt="">
+            <img src="images/logo-cem-nome-completo-v.png" height="70" class="d-inline-block align-top" alt="">
             <label style="margin-top: 10px;">Plataforma de Consulta <br> de Dados Censitários</label>
         </a>
         <!-- End Section:logo -->
         <!-- Section: icons -->
         <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
             <!-- Left menu -->
-            <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+            <!--<ul class="navbar-nav mr-auto mt-2 mt-lg-0">
                 <li class="nav-item active">
                     <a class="nav-link" href="#">Extrair dados<span class="sr-only">(current)</span></a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#">Links importantes</a>
                 </li>
-            </ul>
+            </ul>-->
             <!-- Right menu -->
-            <ul class="navbar-nav pull-right navbar-right">
+            <ul class="navbar-nav ml-auto">
                 <li class="dropdown nav-item">
                     <a href="javascript:;" class="nav-link"  data-toggle="modal" data-target="#aboutProjectModal">
                         <i class="fa fa-2x fa-question-circle"></i>
@@ -158,7 +158,7 @@
                         <!-- ng-controller = tablesController -->
                         <!-- ******************************** -->
 
-                        <h4 class="text-primary"> TIPO DE DADOS</h4>
+                        <h4 class="text-dark-green"> TIPO DE DADOS</h4>
 
                         <div ng-controller="tablesController as ctrl" style="text-align: center; margin-bottom: 20px;">
 
@@ -218,6 +218,8 @@
                     <!-- ******************************** -->
                     <!-- ng-controller = yearsController  -->
                     <!-- ******************************** -->
+                    <label style="font-weight: 600;" >CENSOS: (Variáveis agrupadas por ano do Censo)</label>
+                    <small id='emailHelp' class='form-text text-muted'>Escolha o ano do Censo do qual você deseja selecionar variáveis.</small>
                     <div class="form-group" ng-controller="yearsController" style="margin-left:10px;">
                         <!-- <label>Censos:</label> -->
                         <select multiple size="4" id="ano" name="ano" class="form-control input-sm" onchange="changeCenso()" ng-model="parameters.ano" ng-change="changeCenso()" style = "min-width:120px;display:none">
@@ -429,7 +431,7 @@
                     </input>
                 </div>
 
-                <div class="pull-right" style="">
+                <div class="pull-right">
                     <!--
                     <input id="teste" class="form-group btn btn-info" style="margin-left:200px;width:120px" type="submit" value="teste rem" ng-click="submitTESTErem()">
                     -->

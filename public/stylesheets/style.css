@@ -85,7 +85,15 @@ a {
 .bg-blue-intense {
     background-color: #2e60a8;
 }
+/*maf*/
+.bg-dark-green {
+    background-color: #21585f; /*#173e43*/
+}
 
+.text-dark-green {
+    color: #21585f; /*#173e43*/
+}
+/*maf*/
 .footer {
     position: absolute;
     bottom: 0;
@@ -178,4 +186,8 @@ a, .mdl-accordion, .mdl-button, .mdl-card, .mdl-checkbox, .mdl-dropdown-menu, .m
 
 .card {
     border: 3px solid rgba(0,0,0,.125);
+}
+
+.bootbox .modal-dialog .modal-content .modal-header {
+    display: block;
 }
