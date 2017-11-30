@@ -71,17 +71,22 @@
             <!-- Right menu -->
             <ul class="navbar-nav ml-auto">
                 <li class="dropdown nav-item">
+                    <a href="http://200.144.244.241/foruns/" class="nav-link" title="Forum de discussões sobre a plataforma de extração de dados censitários">
+                        <i class="fa fa-2x fa-comments"></i> Acesse o Forum
+                    </a>
+                </li>
+                <!--<li class="dropdown nav-item">
                     <a href="javascript:;" class="nav-link"  data-toggle="modal" data-target="#aboutProjectModal">
                         <i class="fa fa-2x fa-question-circle"></i>
                     </a>
-                </li>
-                <li class="dropdown nav-item">
+                </li>-->
+                <!--<li class="dropdown nav-item">
                     <a href="javascript:;" class="nav-link dropdown-toggle" id="notificationsDropDown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i class="fa fa-2x fa-bell"></i>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="notificationsDropDown">
                         <li class="dropdown-item">
-                            <span class="label label-default">Você tem 3 notificações.</span>
+                            <span class="label label-default">Você tem ... notificações.</span>
                         </li>
                         <li class="dropdown-item">
                             <a href="javascript:;"><i class="fa fa-file-archive-o"></i> O arquivo solicitado foi gerado</a>
@@ -91,8 +96,8 @@
                             <a href="javascript:;"> Todas as notificações</a>
                         </li>
                     </ul>
-                </li>
-                <li class="dropdown nav-item">
+                </li>-->
+                <!--<li class="dropdown nav-item">
                     <a href="javascript:;" class="nav-link dropdown-toggle" id="userDropDown"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i class="fa fa-2x fa-user"></i> Usuário
                     </a>
@@ -111,7 +116,7 @@
                             <a href="javascript:;"><i class="fa fa-fw fa-power-off"></i> Sair</a>
                         </li>
                     </ul>
-                </li>
+                </li>-->
 
                 <li class="dropdown nav-item">
                     <a href="javascript:;" class="nav-link dropdown-toggle" id="languagesDropDown"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -158,7 +163,7 @@
                         <!-- ng-controller = tablesController -->
                         <!-- ******************************** -->
 
-                        <h4 class="text-dark-green"> TIPO DE DADOS</h4>
+                        <h4 class="text-dark-green"><b>PASSO 1.</b> SELECIONAR O TIPO DE DADOS</h4>
 
                         <div ng-controller="tablesController as ctrl" style="text-align: center; margin-bottom: 20px;">
 
@@ -174,7 +179,7 @@
                             <div data-toggle="buttons" onchange="changeCollection()">
                                 <span class="text-dark" style="font-size: 1rem; font-weight: 600; padding-right: 15px;">PESSOA</span>
                                 <label class="btn btn-outline-dark btn-tables-circle btn-lg" title="Pessoa" style="margin-right: 20px;">
-                                     <input type="radio" id="radio01" name="typeSel" value="tPes" ng-change="ctrl.updateVars()" ng-model="parameters.tabela"><i class="fa fa-user-o"></i>
+                                    <input type="radio" id="radio01" name="typeSel" value="tPes" ng-change="ctrl.updateVars()" ng-model="parameters.tabela"><i class="fa fa-user-o"></i>
                                 </label>
 
                                 <label class="btn btn-outline-dark btn-tables-circle btn-lg"  title="Domicílio">
@@ -196,18 +201,16 @@
         <div class="col-lg-6">
             <div class="card">
                 <div class="card-header card-header-title">
-                    <i class="fa fa-database fa-fw"></i> SELEÇÃO DE VARIÁVEIS
+                    <i class="fa fa-database fa-fw"></i> <b>PASSO 2.</b> SELEÇÃO DE VARIÁVEIS
                 </div>
                 <div class="card-body">
-
-
                     <!-- ROW: TEMA -->
                     <div>
                         <!-- ******************************** -->
                         <!-- ng-controller = themController  -->
                         <!-- ******************************** -->
                         <div class="form-inline form-group" ng-controller="themeController">
-                            <label for="theme" style="font-weight: 600;">TEMAS:&nbsp;&nbsp;</label>
+                            <label for="theme" style="font-weight: 600;">2.1. SELECIONAR UM TEMA:&nbsp;&nbsp;</label>
                             <select id="theme" name="theme" class="form-control col" onchange="changeTheme()" ng-model="parameters.theme" ng-change="changeTheme()">
                                 <!-- <option value="">Selecione um ano</option> -->
                                 <option value="">Selecione um tema</option>
@@ -218,7 +221,7 @@
                     <!-- ******************************** -->
                     <!-- ng-controller = yearsController  -->
                     <!-- ******************************** -->
-                    <label style="font-weight: 600;" >CENSOS: (Variáveis agrupadas por ano do Censo)</label>
+                    <label style="font-weight: 600;" >2.2. CENSOS: (Variáveis agrupadas por ano do Censo)</label>
                     <small id='emailHelp' class='form-text text-muted'>Escolha o ano do Censo do qual você deseja selecionar variáveis.</small>
                     <div class="form-group" ng-controller="yearsController" style="margin-left:10px;">
                         <!-- <label>Censos:</label> -->
@@ -335,7 +338,7 @@
                 </div>
 
 
-                
+
             </div> <!-- class="card" -->
 
             <!--
@@ -353,118 +356,127 @@
                     <i class="fa fa-shopping-cart fa-fw"></i> CARRINHO DE VARIÁVEIS SELECIONADAS
                 </div>
                 <div class="card-body">
-                        <div style="height:365px;overflow:auto">
-                                
-                    <table id = "tabSelectedVariables" name="selectedVariables[]"  class="table table-striped table-condensed" size="10px"
-                           style="height:0px;" ng-model="parameters.selectedVariables">
-                        <tr>
-                            <!--                  <th><input type="checkbox" id="selectBox"></th> -->
-                            <th style="vertical-align:middle;width:10px">Ano</th>
-                            <th>Código</th>
-                            <th></th>
-                            <th>Descrição</th>
-                            <th>Excluir</th>
-                            <!-- <th></th> -->
-                        </tr>
-                        <tr ng-repeat="item in parameters.selectedVariables">
-                            <td style="vertical-align:middle;">{{item.year}}</td>
-                            <td style="vertical-align:middle;width:30px;">{{item.varCode}}</td>
-                            <td style="vertical-align:middle;width:5px;">
-                                <a href="" data-toggle="modal" data-target="#myModal"><i title="Informação detalhada da variável" style="font-size: 1.3em;" class="fa fa-info-circle text-info"></i>
-                                <!--<span data-toggle="tooltip" title="Clique para detalhes da variável {{item.varCode}}" class="glyphicon glyphicon-question-sign" ng-click="InfoVar(item)">
-                                    <b>?</b>
-                                </span>-->
-                                </a>
-                            </td> <!-- InfoVar(item) -->
-                            <!--
-                            <td style="vertical-align: middle;">xx<a href="#"><span class="glyphicon glyphicon-question-sign"></span></a></td>
-                            -->
-                            <td style="vertical-align:middle;">{{item.label}}</td>
-                            <td style="vertical-align:middle;width:30px;text-align:center" ng-click="RemoveVar(item,$index)">
-                                <a href="">
-                                    <i title="Clique para excluir a variável {{item.varCode}} da lista de variáveis selecionadas" style="font-size: 1.3em;" class="fa fa-times text-danger"></i>
-                                    <!--<span data-toggle="tooltip" title="Clique para excluir a variável {{item.varCode}} da lista de variáveis selecionadas" class="glyphicon glyphicon-remove" style="color:red">x</span>-->
-                                </a>
-                            </td>
-                            <!--
-                            <td style="text-align:center;vertical-align:middle;"><input type="checkbox" id="V0001"></td>
-                            <td>>= d</td>
-                            <td><a data-toggle="modal" data-target="#GSCCModal">Editar 1 2 3 </a></td>
-                            -->
-                        </tr>
-                    </table>
+                    <div class="form-group" style="height:403px;overflow:auto">
+
+                        <table id = "tabSelectedVariables" name="selectedVariables[]"  class="table table-striped table-condensed" size="10px"
+                               style="height:0px;" ng-model="parameters.selectedVariables">
+                            <tr>
+                                <!--                  <th><input type="checkbox" id="selectBox"></th> -->
+                                <th style="vertical-align:middle;width:10px">Ano</th>
+                                <th>Código</th>
+                                <th></th>
+                                <th>Descrição</th>
+                                <th>Excluir</th>
+                                <!-- <th></th> -->
+                            </tr>
+                            <tr ng-repeat="item in parameters.selectedVariables">
+                                <td style="vertical-align:middle;">{{item.year}}</td>
+                                <td style="vertical-align:middle;width:30px;">{{item.varCode}}</td>
+                                <td style="vertical-align:middle;width:5px;">
+                                    <a href="" data-toggle="modal" data-target="#myModal"><i title="Informação detalhada da variável" style="font-size: 1.3em;" class="fa fa-info-circle text-info" ng-click="InfoVar(item)"></i>
+                                        <!--<span data-toggle="tooltip" title="Clique para detalhes da variável {{item.varCode}}" class="glyphicon glyphicon-question-sign" ng-click="InfoVar(item)">
+                                            <b>?</b>
+                                        </span>-->
+                                    </a>
+                                </td> <!-- InfoVar(item) -->
+                                <!--
+                                <td style="vertical-align: middle;">xx<a href="#"><span class="glyphicon glyphicon-question-sign"></span></a></td>
+                                -->
+                                <td style="vertical-align:middle;">{{item.label}}</td>
+                                <td style="vertical-align:middle;width:30px;text-align:center" ng-click="RemoveVar(item,$index)">
+                                    <a href="">
+                                        <i title="Clique para excluir a variável {{item.varCode}} da lista de variáveis selecionadas" style="font-size: 1.3em;" class="fa fa-times text-danger"></i>
+                                        <!--<span data-toggle="tooltip" title="Clique para excluir a variável {{item.varCode}} da lista de variáveis selecionadas" class="glyphicon glyphicon-remove" style="color:red">x</span>-->
+                                    </a>
+                                </td>
+                                <!--
+                                <td style="text-align:center;vertical-align:middle;"><input type="checkbox" id="V0001"></td>
+                                <td>>= d</td>
+                                <td><a data-toggle="modal" data-target="#GSCCModal">Editar 1 2 3 </a></td>
+                                -->
+                            </tr>
+                        </table>
 
 
 
                     </div>
                 </div>
-                
+
             </div>
 
             <br><br>
 
-           <!-- <div class="form-inline"> -->
-
-                <!--
-                <div class="form-group panel panel-default">
-                    <div class="panel-heading">Opções de arquivo de saida</div>
-                    <div class="panel-body" style="padding:5px">
-                        <input id = "radioCSVComma" type="radio" name="formatoDados" ng-model="parameters.formatoDados" value="csv-commas" checked="checked">&nbspCSV delimitado por vírgula</input>
-                        <br>
-                        <input id = "radioSemicolon" type="radio" name="formatoDados" ng-model="parameters.formatoDados" value="csv-semicolon">&nbspCSV delimitado por ponto e vírgula</input>
-                    </div>
-                </div>
-                -->
-
-                        
             <!-- <div class="form-inline"> -->
 
-                <div style="float: left;">
-                    <h6>Opções de arquivo de saida</h6>
-                    <br><br>
-                    <input id = "radioCSVComma" type="radio" name="formatoDados" ng-model="parameters.formatoDados" value="csv-commas" checked="checked">
-                        &nbspCSV delimitado por vírgula
-                    </input>
-                    <br><br>
-                    <input id = "radioSemicolon" type="radio" name="formatoDados" ng-model="parameters.formatoDados" value="csv-semicolon">
-                        &nbspCSV delimitado por ponto e vírgula
-                    </input>
+            <!--
+            <div class="form-group panel panel-default">
+                <div class="panel-heading">Opções de arquivo de saida</div>
+                <div class="panel-body" style="padding:5px">
+                    <input id = "radioCSVComma" type="radio" name="formatoDados" ng-model="parameters.formatoDados" value="csv-commas" checked="checked">&nbspCSV delimitado por vírgula</input>
+                    <br>
+                    <input id = "radioSemicolon" type="radio" name="formatoDados" ng-model="parameters.formatoDados" value="csv-semicolon">&nbspCSV delimitado por ponto e vírgula</input>
                 </div>
+            </div>
+            -->
 
-                <div class="pull-right">
-                    <!--
-                    <input id="teste" class="form-group btn btn-info" style="margin-left:200px;width:120px" type="submit" value="teste rem" ng-click="submitTESTErem()">
-                    -->
-                    <input id="btnClearAllFields" class="form-group btn btn-secondary" style="width:240px" type="submit" value="Limpar todos os campos" ng-click="submitQuery()" onclick="submitLimpa()">
-                    </input>
 
-                    <input id="btnConfSolic" class="form-group btn btn-info" style="width:240px" type="submit" value="Visualizar e gerar arquivo" ng-click="submitQuery()" onclick="EnableGera()">
-                    </input>
-                    
-                    <input id="btnGeraArq" class="form-group btn btn-primary" style="width:120px;display:none" type="submit" value="Gerar arquivo" ng-click="submitGeraArquivo()" disabled=""  onclick="disableGera()">
-                    </input>
-                    <!--
-                    <input id="btnGeraArq2" class="form-group btn btn-primary" style="margin-left:10px;width:120px" type="submit" value="Gerar arq." ng-click="submitGeraArquivo2()">
-                    -->
-                    
-                    <div id="msgConfGera" class="help-block" style="">{{msgConfirmaGera}}</div>
-                    <div id="arqGerado" style="display: none">{{baixarArq}}
-                        <a href="{{fileLink}}" download> {{texto}}</a>
-                    </div>
-                </div> <!-- class="pull-right" -->
+
 
             <!-- </div> <!-- class="form-inline" -->
 
         </div> <!-- class="col-lg-6" -->
 
 
-        </div>
+    </div>
     </div>
     <!-- End Row -->
 
     <!-- Row 02 -->
     <div class="row">
-        <div class="col-lg-12"></div>
+        <div class="col-lg-12">
+            <!-- <div class="form-inline"> -->
+
+            <!--<div style="display:none">
+                <h6>Opções de arquivo de saida</h6>
+                <br><br>
+                <input id = "radioCSVComma" type="radio" name="formatoDados" ng-model="parameters.formatoDados" value="csv-commas" checked="checked">
+                &nbspCSV delimitado por vírgula
+                </input>
+                <br><br>
+                <input id = "radioSemicolon" type="radio" name="formatoDados" ng-model="parameters.formatoDados" value="csv-semicolon">
+                &nbspCSV delimitado por ponto e vírgula
+                </input>
+            </div>-->
+
+
+            <!--
+            <input id="teste" class="form-group btn btn-info" style="margin-left:200px;width:120px" type="submit" value="teste rem" ng-click="submitTESTErem()">
+            -->
+            <div ng-controller="tablesController" style="text-align: center">
+
+                <button id="btnClearAllFields" class="form-group btn btn-secondary" style="height: 60px; width:300px" type="submit" ng-click="submitLimpa()">
+                    <i class="fa fa-refresh"></i> Limpar todos os campos
+                </button>
+                <button id="btnConfSolic" class="form-group btn bg-dark-green" style="height: 60px; width:300px"
+                        type="submit" ng-click="submitQuery()" onclick="EnableGera()" title="Clickando nessa opção o sistema gerará uma pré-visualização dos dados que você está extraindo">
+                    <i class="fa fa-table"></i><b> Passo 3.</b> Visualizar e gerar arquivo
+                </button>
+
+                <input id="btnGeraArq" class="form-group btn btn-primary" style="display:none" type="submit" value="Gerar arquivo" ng-click="submitGeraArquivo()" disabled=""  onclick="disableGera()">
+                </input>
+            </div>
+
+
+            <!--
+            <input id="btnGeraArq2" class="form-group btn btn-primary" style="margin-left:10px;width:120px" type="submit" value="Gerar arq." ng-click="submitGeraArquivo2()">
+            -->
+
+            <!--<div id="msgConfGera" class="help-block" style="">{{msgConfirmaGera}}</div>
+            <div id="arqGerado" style="display: none">{{baixarArq}}
+                <a href="{{fileLink}}" download> {{texto}}</a>
+            </div>-->
+        </div> <!-- class="pull-right" -->
+
 
     </div>
 
@@ -529,54 +541,54 @@
             </div>
             <div class="modal-body">
 
-                    <!-- Nav tabs -->
-                    <ul class="nav nav-tabs" id="variablesInfoTab" role="tablist">
-                        <li class="nav-item">
-                            <a class="nav-link active"  href="#descTab" id="desc-tab" aria-controls="descTab"
-                               role="tab" data-toggle="tab" aria-selected="true" title="Descrição detalhada">Descrição</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#popToAplyTab" id="popToApply-tab" aria-controls="popToAplyTab"
-                               role="tab" data-toggle="tab" aria-selected="false" title="">População a qual se aplica</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#obsTab" id="obs-tab" aria-controls="obsTab"
-                                                role="tab" data-toggle="tab" aria-selected="false" title="">Observações</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#catTab" id="cat-tab" aria-controls="catTab"
-                                                role="tab" data-toggle="tab" aria-selected="false" title="">Categorias</a>
-                        </li>
-                    </ul>
-                    <!-- Tab panels -->
-                    <div class="tab-content" id="variablesInfoTabContent">
-                        <div role="tabpanel" class="tab-pane fade show active" id="descTab" aria-labelledby="desc-tab" style="margin-left:10px;height:200px;overflow-y:scroll">
-                            <br>
-                            <p style="white-space:pre-wrap;">{{textoDescricaoVar}}</p>
-                        </div>
-                        <div role="tabpanel" class="tab-pane fade" id="popToAplyTab" aria-labelledby="popToApply-tab" style="margin-left:10px;height:200px;overflow-y:scroll">
-                            <br>
-                            <p style="white-space:pre-wrap;">{{textoPopToApplyVar}}</p>
-                        </div>
-                        <div role="tabpanel" class="tab-pane fade" id="obsTab" aria-labelledby="obs-tab" style="margin-left:10px;height:200px;overflow-y:scroll">
-                            <br>
-                            <p style="white-space:pre-wrap;">{{textoObsVar}}</p>
-                        </div>
-                        <div role="tabpanel" class="tab-pane fade" id="catTab" aria-labelledby="cat-tab" style="margin-left:10px;height:200px;overflow-y:scroll">
-                            <br>
-                            <p style="white-space:pre-wrap;">{{textoCategoriaVar}}</p>
-                            <table id = "tabCategory" name="category[]"  class="table table-condensed {{categoryTableClass}}" ng-model="data.category">
-                                <tr>
-                                    <th style="vertical-align:middle;width:10px">Valor</th>
-                                    <th>Descrição</th>
-                                </tr>
-                                <tr ng-repeat="item in data.category">
-                                    <td ng-repeat="(key,val) in item" style="vertical-align:middle;">{{val}}</td>
-                                    <!-- <td style="vertical-align:middle;">{{item.label}}</td> -->
-                                </tr>
-                            </table>
-                        </div>
+                <!-- Nav tabs -->
+                <ul class="nav nav-tabs" id="variablesInfoTab" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active"  href="#descTab" id="desc-tab" aria-controls="descTab"
+                           role="tab" data-toggle="tab" aria-selected="true" title="Descrição detalhada">Descrição</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#popToAplyTab" id="popToApply-tab" aria-controls="popToAplyTab"
+                           role="tab" data-toggle="tab" aria-selected="false" title="">População a qual se aplica</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#obsTab" id="obs-tab" aria-controls="obsTab"
+                           role="tab" data-toggle="tab" aria-selected="false" title="">Observações</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#catTab" id="cat-tab" aria-controls="catTab"
+                           role="tab" data-toggle="tab" aria-selected="false" title="">Categorias</a>
+                    </li>
+                </ul>
+                <!-- Tab panels -->
+                <div class="tab-content" id="variablesInfoTabContent">
+                    <div role="tabpanel" class="tab-pane fade show active" id="descTab" aria-labelledby="desc-tab" style="margin-left:10px;height:200px;overflow-y:scroll">
+                        <br>
+                        <p style="white-space:pre-wrap;">{{textoDescricaoVar}}</p>
                     </div>
+                    <div role="tabpanel" class="tab-pane fade" id="popToAplyTab" aria-labelledby="popToApply-tab" style="margin-left:10px;height:200px;overflow-y:scroll">
+                        <br>
+                        <p style="white-space:pre-wrap;">{{textoPopToApplyVar}}</p>
+                    </div>
+                    <div role="tabpanel" class="tab-pane fade" id="obsTab" aria-labelledby="obs-tab" style="margin-left:10px;height:200px;overflow-y:scroll">
+                        <br>
+                        <p style="white-space:pre-wrap;">{{textoObsVar}}</p>
+                    </div>
+                    <div role="tabpanel" class="tab-pane fade" id="catTab" aria-labelledby="cat-tab" style="margin-left:10px;height:200px;overflow-y:scroll">
+                        <br>
+                        <p style="white-space:pre-wrap;">{{textoCategoriaVar}}</p>
+                        <table id = "tabCategory" name="category[]"  class="table table-condensed {{categoryTableClass}}" ng-model="data.category">
+                            <tr>
+                                <th style="vertical-align:middle;width:10px">Valor</th>
+                                <th>Descrição</th>
+                            </tr>
+                            <tr ng-repeat="item in data.category">
+                                <td ng-repeat="(key,val) in item" style="vertical-align:middle;">{{val}}</td>
+                                <!-- <td style="vertical-align:middle;">{{item.label}}</td> -->
+                            </tr>
+                        </table>
+                    </div>
+                </div>
 
             </div>
             <div class="modal-footer">
