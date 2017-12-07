@@ -87,13 +87,22 @@ a {
 }
 /*maf*/
 .bg-dark-green {
-    background-color: #21585f; /*#173e43*/
-    color: #ffffff;
+    background-color: #2bb673;/*21585f*/ /*#173e43*/
+    color: #000000; /*ffffff;*/
 }
 
 .text-dark-green {
     color: #21585f; /*#173e43*/
 }
+
+.text-dark {
+    color: #373c4f; /*#173e43*/
+}
+
+a {
+    color: #2bb673;
+}
+
 /*maf*/
 .footer {
     position: absolute;
@@ -192,3 +201,4 @@ a, .mdl-accordion, .mdl-button, .mdl-card, .mdl-checkbox, .mdl-dropdown-menu, .m
 .bootbox .modal-dialog .modal-content .modal-header {
     display: block;
 }
+
