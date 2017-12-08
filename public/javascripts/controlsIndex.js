@@ -1,11 +1,11 @@
 function disableGera () {
     document.getElementById("btnGeraArq").disabled = true;
-    document.getElementById("arqGerado").style.display = "inline-block";
+    //document.getElementById("arqGerado").style.display = "inline-block";
 }
 
 function initGera () {
     document.getElementById("btnGeraArq").disabled = true;
-    document.getElementById("arqGerado").style.display = "none";
+    //document.getElementById("arqGerado").style.display = "none";
 }
 
 function EnableGera () {

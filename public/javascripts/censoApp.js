@@ -32,6 +32,11 @@ censoApp.controller('submitController',['$scope', '$http', function ($scope, $ht
     console.log('CensoApp: submitController');
 
     $scope.parameters.formatoDados = "csv-commas";
+    
+    function validateEmail(email) {
+        var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return re.test(email);
+    }
 
     $scope.InfoVar = function(objVar){
         console.log('CensoApp.submitController: InforVar clicked -> infoVAR', objVar);
@@ -203,8 +208,23 @@ censoApp.controller('submitController',['$scope', '$http', function ($scope, $ht
                         $scope.parameters.email = strEmailRet;
                         $scope.parameters.formatoDados = strFileType;
 
-                        // Gera arquivo e envia e-mail
-                        $scope.submitGeraArquivo();
+                        // Verificar email
+                        strEmailRet = strEmailRet.trim();
+                        if (!validateEmail(strEmailRet)) {
+                            //console.log ("E-mail inválido!");
+                            bootbox.alert ({
+                                size: "medium",
+                                title: "Prévia e geração do arquivo",
+                                message: "<div class='alert alert-warning' role='alert'>" +
+                                strEmailRet + ":  E-mail inválido!" +
+                                "</div>"
+                            });
+                            return false;
+                        } else {
+                            // Gera arquivo e envia e-mail
+                            //console.log ("Gera arquivo e envia e-mail!");
+                            $scope.submitGeraArquivo();
+                        }
                     }
                 }
             }
