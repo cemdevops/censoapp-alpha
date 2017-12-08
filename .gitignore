@@ -12,3 +12,6 @@ psw.js
 *.launch
 .settings/
 *.sublime-workspace
+
+# Others sources
+/public/stylesheets/font-awesome-4.7.0
