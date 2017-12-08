@@ -38,6 +38,22 @@ censoApp.controller('submitController',['$scope', '$http', function ($scope, $ht
         return re.test(email);
     }
 
+    var functionSortVariables = function (variableA, variableB) {
+        if (variableA.year > variableB.year) {
+            return -1;
+        } else if (variableA.year < variableB.year) {
+            return 1;
+        } else {
+            if (variableA.varCode > variableB.varCode) {
+                return 1;
+            } else if (variableA.varCode < variableB.varCode) {
+                return -1
+            }
+        }
+        // equal Year and varCode. Return 0 = equal
+        return 0;
+    }
+    
     $scope.InfoVar = function(objVar){
         console.log('CensoApp.submitController: InforVar clicked -> infoVAR', objVar);
 
@@ -347,6 +363,7 @@ censoApp.controller('submitController',['$scope', '$http', function ($scope, $ht
             if (!bolExiste) {
                 // Variável ainda não existe. Vai incluir na lista.
                 $scope.parameters.selectedVariables.push (objVar);
+                $scope.parameters.selectedVariables.sort(functionSortVariables);
 
                 objTabela = $scope.parameters;
                 objParam = {params:objTabela};
