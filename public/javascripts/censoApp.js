@@ -195,7 +195,7 @@ censoApp.controller('submitController',['$scope', '$http', function ($scope, $ht
                 },
                 ok: {
                     label: "Gerar arquivo",
-                    className: 'btn-info',
+                    className: 'bg-dark-green',
                     callback: function(){
                         strEmailRet = $("#inputEmail").val();
                         strFileType = $("input[name=formatoDados]:checked").val();
