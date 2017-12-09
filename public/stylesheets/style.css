@@ -87,7 +87,7 @@ a {
 }
 /*maf*/
 .bg-dark-green {
-    background-color: #2bb673;/*21585f*/ /*#173e43*/
+    background-color: #00468E;/*21585f*/ /*#173e43*/
     color: #ffffff; /*ffffff;*/
 }
 
@@ -100,11 +100,16 @@ a {
 }
 
 a {
-    color: #2bb673;
+    color: #00468E;
 }
 
 a:hover {
     color: #CD921C;
+}
+
+
+.link-background-dark {
+    color: #59ABFF;
 }
 
 /*maf*/
@@ -221,7 +226,7 @@ a, .mdl-accordion, .mdl-button, .mdl-card, .mdl-checkbox, .mdl-dropdown-menu, .m
 }
 
 .carousel-caption a {
-    color: #2bb673;
+    color: #59ABFF;
 }
 
 .carousel-caption a:hover {
@@ -243,5 +248,5 @@ a, .mdl-accordion, .mdl-button, .mdl-card, .mdl-checkbox, .mdl-dropdown-menu, .m
 /*nav pills*/
 .nav-pills .nav-link.active, .nav-pills .show>.nav-link {
     color: #ffffff;
-    background-color: #2bb673;
+    background-color: #00468E;
 }

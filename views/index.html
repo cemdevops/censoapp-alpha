@@ -50,7 +50,7 @@
 <body  ng-app="censoApp" ng-controller="submitController">
 <header>
     <!-- Image and text -->
-    <nav class="navbar navbar-expand-md fixed-top navbar-light bg-dark-green">
+    <nav class="navbar navbar-expand-md fixed-top navbar-dark bg-dark-green">
         <!-- Section: toogler -->
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo01"
                 aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
@@ -59,7 +59,7 @@
         <!-- End Section: toogler -->
         <!-- Section: logo -->
         <a class="navbar-brand" href="http://web.fflch.usp.br/centrodametropole/">
-            <img src="images/logo-cem-3-md.png" height="70" class="d-inline-block align-top" alt="">
+            <img src="images/logo_cem-hd.jpg" height="70" class="d-inline-block align-top" alt="">
             <!--<label style="margin-top: 10px; opacity:0.5;">Plataforma de Consulta <br> de Dados Censitários</label>-->
         </a>
         <!-- End Section:logo -->
@@ -614,12 +614,12 @@
 <div class="modal fade" id="pageloadModal" tabindex="-1" role="dialog" aria-labelledby="pageloadModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title" id="pageloadModalLabel">Bem-vindo a nossa plataforma!</h3>
+            <!--<div class="modal-header">
+                <h3 class="modal-title" id="pageloadModalLabel">Bem vindo ao CEM-Dados: Censos Demográficos</h3>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
-            </div>
+            </div>-->
             <div class="modal-body">
 
                 <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
@@ -628,55 +628,63 @@
                         <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
                         <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
                         <li data-target="#carouselExampleIndicators" data-slide-to="3"></li>
+                        <li data-target="#carouselExampleIndicators" data-slide-to="4"></li>
                     </ol>
                     <div class="carousel-inner">
                         <div class="carousel-item active">
                             <!--<img class="d-block w-100" src="images/slides-modal-pageload/forum-home.png" alt="First slide">-->
+                            <h3 class="text-center">Bem vindo ao CEM-Dados: Censos Demográficos</h3>
+                            <hr>
                             <div class="carrousel-text-alert" role="alert" >
                                 <p>
-                                Esta plataforma pretende divulgar/expandir o uso dos dados censitários para um público
-                                mais amplo – reduzindo os custos de capacitação técnica para a
-                                utilização.
+                                    Esta plataforma do Centro de Estudos da Metrópole tem o objetivo de auxiliar na difusão
+                                    e uso dos microdados das Amostras dos Censos Demográficos realizados decenalmente pelo IBGE.
                                 </p>
-                                <p>A plataforma serve para consulta e
-                                cruzamento dos dados, por meio de uma interface gráfica intuitiva e
-                                amigável; permitindo que por exemplo estudantes de graduação, profissionais de
-                                outras áreas (em especial, jornalismo) interessados em produzir seus
-                                próprios dados a partir das fontes primárias originais possam manipular os dados
-                                sem muita complicação.
+                                <p>
+                                    Por meio de uma interface gráfica intuitiva e amigável, estudante, pesquisador ou profissional
+                                    interessado pode obter informações e extrair variáveis e registros dos microdados originais.
                                 </p>
                                 <hr>
                                 <h4>
-                                    <a href="#">Esperamos que você faça bom proveito!</a>
+                                    <a class="link-background-dark" href="#">Esperamos que você faça bom proveito!</a>
                                 </h4>
                             </div>
 
                         </div>
                         <div class="carousel-item">
-                            <img class="d-block w-100" src="images/slides-modal-pageload/censo-app.png" alt="Forum">
-                            <!--<div class=" carousel-caption d-none d-block alert" style="background: rgba(0,0,0,0.6);">
-                                <h6>A Plataforma passo a passo</h6>
-                            </div>-->
+                            <h3 class="text-center">Como utilizar</h3>
+                            <hr>
+                            <img class="d-block w-100" src="images/slides-modal-pageload/censo-app-blue.png" alt="censo-app">
+
                         </div>
                         <div class="carousel-item">
-                            <img class="d-block w-100" src="images/slides-modal-pageload/forum.png"  alt="Third slide...">
+                            <h3 class="text-center">Utilize os pesos amostrais!</h3>
+                            <hr>
+                            <img class="d-block w-100" src="images/slides-modal-pageload/peso-amostral.png" alt="Peso amostral">
                             <div class="carousel-caption d-none d-sm-block alert carrousel-modal">
-                                <a href="http://200.144.244.241/foruns/" class="nav-link"  target="_blank" title="Forum de discussões sobre a plataforma de extração de dados censitários">
-                                    <i class="fa fa-2x fa-comments"></i> <h5>Sugestões e dúvidas</h5>
-                                </a>
-                                <p>Um espaço construído especialmente para você. Com o objetivo de você poder deixar suas sugestões e esclarecer suas dúvidas.</p>
+                                <i class="fa fa-2x fa-book"></i>
+                                <p style="font-size: 14px;">Para fazer inferências a partir das amostras dos Censos Demográficos,
+                                    é sempre necessário fazer análises utilizando os PESOS AMOSTRAIS. </p>
                             </div>
                         </div>
                         <div class="carousel-item">
-                            <img class="d-block w-100" src="images/slides-modal-pageload/wiki.png"  alt="Third slide...">
+                            <h3 class="text-center">Tem dúvidas?</h3>
+                            <hr>
+                            <img class="d-block w-100" src="images/slides-modal-pageload/forum-blue.png"  alt="Sugestões e dúvidas">
+                            <div class="carousel-caption d-none d-sm-block alert carrousel-modal">
+                                <a href="http://200.144.244.241/foruns/" class="nav-link"  target="_blank" title="Forum de discussões sobre a plataforma de extração de dados censitários">
+                                    <i class="fa fa-2x fa-comments"></i> <h5>Consulte o WikiDados!</h5>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <h3 class="text-center">Tem mais dúvidas ou quer dar sugestões?</h3>
+                            <hr>
+                            <img class="d-block w-100" src="images/slides-modal-pageload/wiki-blue.png"  alt="Wikipedia dos dados">
                             <div class="carousel-caption d-none d-sm-block alert carrousel-modal">
                                 <a href="http://200.144.244.241/foruns/index.php/wiki" class="nav-link"  target="_blank" title="Wikipedia sobre o Censo">
-                                    <i class="fa fa-2x fa-wikipedia-w"></i> <h5>WikiDados: Censos Demográficos</h5>
+                                    <i class="fa fa-2x fa-wikipedia-w"></i> <h5>Participe do nosso Fórum!</h5>
                                 </a>
-                                <p>Esta página visa fornecer subsídios para o uso dos dados dos Censos Demográficos Brasileiros (1960-2010)
-                                    disponibilizados pelo Centro de Estudos da Metrópole (CEM). </p>
-                                <p>Aqui você poderá encontrar informações sobre como utilizar os dados, sobre conceitos e significados
-                                    empregados pelo IBGE, sobre as dificuldades implicadas na comparação longitudinal etc. </p>
                             </div>
                         </div>
                     </div>
