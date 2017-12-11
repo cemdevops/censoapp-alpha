@@ -250,3 +250,62 @@ a, .mdl-accordion, .mdl-button, .mdl-card, .mdl-checkbox, .mdl-dropdown-menu, .m
     color: #ffffff;
     background-color: #00468E;
 }
+
+/*brand*/
+.navbar-brand {
+    display: inline-block;
+    padding-top: 0rem;
+    padding-bottom: 0rem;
+    margin: -7px -15px;
+    font-size: 1.5rem;
+    line-height: inherit;
+    white-space: nowrap;
+}
+
+/*brand title*/
+#brand-title-vertical {
+    margin-top: 3px;
+    margin-bottom: 3px;
+    color: rgba(255,255,255,0.5);
+    font-weight: 600; font-size: 26px;
+}
+
+/*brand subtitle*/
+#brand-subtitle-vertical {
+    font-weight: normal;
+    font-size: 13px;
+    margin-bottom: 0rem;
+    color: rgba(255,255,255,1);
+}
+
+/*brand title*/
+#brand-title-horizontal {
+    margin-top: 10px;
+    opacity: 0.9;
+    font-weight: 600;
+    font-size: 26px;
+}
+
+/*brand subtitle*/
+#brand-subtitle-horizontal {
+    font-weight: normal;
+    font-size: 14px;
+    margin-bottom: 0.3rem;
+}
+
+#main-container {
+    margin-top:90px;
+}
+
+<!-- Arrows -->
+.carousel-control-top {
+    top: 70px!important;
+}
+
+.modal-body-header {
+    margin-bottom: 10px;
+}
+
+.
+
+
