@@ -99,6 +99,10 @@ a {
     color: #373c4f; /*#173e43*/
 }
 
+.text-yellow {
+    color: #CD921C;
+}
+
 a {
     color: #00468E;
 }
@@ -214,24 +218,25 @@ a, .mdl-accordion, .mdl-button, .mdl-card, .mdl-checkbox, .mdl-dropdown-menu, .m
 /*carrousel*/
 .carousel-caption {
     position: absolute;
-    right: 15%;
-    bottom: 0px;
-    left: 15%;
+    right: 0%;
+    bottom: -15px;
+    left: 0%;
     z-index: 10;
     padding-top: 20px;
-    padding-bottom: 20px;
+    padding-bottom: 30px;
     color: #fff;
     text-align: center;
     background: rgba(55,60,79,0.8);
 }
 
-.carousel-caption a {
+.carousel-caption a, a.carousel-control-link {
     color: #59ABFF;
 }
 
-.carousel-caption a:hover {
+.carousel-caption a:hover, a.carousel-control-link:hover {
     color: #CD921C;
 }
+
 
 .carrousel-text-alert {
     right: 15%;
@@ -243,6 +248,13 @@ a, .mdl-accordion, .mdl-button, .mdl-card, .mdl-checkbox, .mdl-dropdown-menu, .m
     border-radius: .25rem;
     padding: 3.0rem 4.45rem;
     text-align: center;
+}
+
+.navigator-controls {
+    bottom: 20px;
+    font-weight: 600;
+    opacity: 1;
+    font-size: 15px;
 }
 
 /*nav pills*/
@@ -306,6 +318,6 @@ a, .mdl-accordion, .mdl-button, .mdl-card, .mdl-checkbox, .mdl-dropdown-menu, .m
     margin-bottom: 10px;
 }
 
-.
+
 
 
