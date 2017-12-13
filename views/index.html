@@ -50,7 +50,7 @@
 <body  ng-app="censoApp" ng-controller="submitController">
 <header>
     <!-- Image and text -->
-    <nav class="navbar navbar-expand-md fixed-top navbar-light bg-dark-green">
+    <nav class="navbar navbar-expand-md fixed-top navbar-dark bg-dark-green">
         <!-- Section: toogler -->
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo01"
                 aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
@@ -58,9 +58,14 @@
         </button>
         <!-- End Section: toogler -->
         <!-- Section: logo -->
-        <a class="navbar-brand" href="http://web.fflch.usp.br/centrodametropole/">
-            <img src="images/logo-cem-3-md.png" height="70" class="d-inline-block align-top" alt="">
-            <!--<label style="margin-top: 10px; opacity:0.5;">Plataforma de Consulta <br> de Dados Censitários</label>-->
+        <a class="navbar-brand" target="_blank" href="http://web.fflch.usp.br/centrodametropole/">
+            <img src="images/logo_cem-hdx121.png" height="70" class="d-inline-block align-top" alt="">
+            <label id="brand-title-vertical">CEM-Dados<br>
+                <p id="brand-subtitle-vertical"> Plataforma de Extração de Microdados <br>dos Censos Demográficos (1960-2010)</p>
+            </label>
+            <!--<label id="brand-title-horizontal">CEM-Dados<br>
+                <p id="brand-subtitle-horizontal"> Plataforma de Extração de Microdados dos Censos Demográficos (1960-2010)</p>
+            </label>-->
         </a>
         <!-- End Section:logo -->
         <!-- Section: icons -->
@@ -77,21 +82,21 @@
             <!-- Right menu -->
             <ul class="navbar-nav ml-auto">
                 <li class="dropdown nav-item">
-                    <a href="http://200.144.244.241/foruns/index.php/wiki" class="nav-link" title="Wikipedia sobre o Censo">
-                        <i class="fa fa-2x fa-wikipedia-w"></i> WIKIDADOS: Censos Demográficos
+                    <a href="http://200.144.244.241/foruns/index.php/wiki" class="nav-link"  target="_blank" title="Wikipedia sobre o Censo">
+                        <i class="fa fa-2x fa-wikipedia-w" style="margin-right: -6px;"></i> ikiDados: Censos Demográficos
                     </a>
                 </li>
 
                 <li class="dropdown nav-item">
-                    <a href="http://200.144.244.241/foruns/" class="nav-link" title="Forum de discussões sobre a plataforma de extração de dados censitários">
-                        <i class="fa fa-2x fa-comments"></i> SUGESTÕES E DÚVIDAS
+                    <a href="http://200.144.244.241/foruns/" class="nav-link"  target="_blank" title="Forum de discussões sobre a plataforma de extração de dados censitários">
+                        <i class="fa fa-2x fa-comments"></i> Sugestões e Dúvidas
                     </a>
                 </li>
-                <!--<li class="dropdown nav-item">
+                <li class="dropdown nav-item">
                     <a href="javascript:;" class="nav-link"  data-toggle="modal" data-target="#aboutProjectModal">
-                        <i class="fa fa-2x fa-question-circle"></i>
+                        <i class="fa fa-2x fa-question-circle"></i> Sobre o projeto
                     </a>
-                </li>-->
+                </li>
                 <!--<li class="dropdown nav-item">
                     <a href="javascript:;" class="nav-link dropdown-toggle" id="notificationsDropDown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i class="fa fa-2x fa-bell"></i>
@@ -152,7 +157,7 @@
         <!-- End Section: icons-->
     </nav>
 </header>
-<main role="main" class="container-fluid"  style="margin-top:110px;">
+<main role="main" class="container-fluid" id="main-container">
     <!-- Row 00 -->
     <div class="row" style="margin-bottom: 10px;">
         <div class="col-lg-12">
@@ -522,20 +527,37 @@
 
 <!-- Modal: About the project modal -->
 <div class="modal fade" id="aboutProjectModal" tabindex="-1" role="dialog" aria-labelledby="aboutProjectModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="aboutProjectModalLabel">Plataforma de Extração <br> de dados censitários</h5>
+                <h3 class="modal-title text-center" style="width: 100%;" id="pageloadModalLabel">Sobre o Projeto</h3>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
-                A plataforma de extração de dados censitários ......
+            <div class="modal-body" style="font-size: 15px; padding: 30px;">
+                <img style="display: block; margin-left: auto; margin-right: auto;" src="images/logo-cem-hd.png" height="120" />
+                <p>O <strong>CEM-Dados</strong> e o <strong>WikiDados</strong> são projetos do <strong><a href="http://web.fflch.usp.br/centrodametropole/">Centro de Estudos da Metrópole (CEM</a><a href="http://web.fflch.usp.br/centrodametropole/">)</a></strong>, um <strong><a href="http://cepid.fapesp.br/home/">Cepid</a></strong> financiado pela <a href="http://www.fapesp.br/"><strong>Fapesp</strong> </a>e sediado na Universidade de São Paulo e no<strong> <a href="http://cebrap.org.br/">Centro Brasileiro de Análise e Planejamento (Cebrap)</a></strong>. </span></p>
+                <p><strong>Coordenação e execução:</strong></p>
+                <p><strong>Marta Arretche</strong></p>
+                <p>Diretora do Centro de Estudos da Metrópole</p>
+                <p>Departamento de Ciência Política da USP</p>
+                <br>
+                <p><strong>Rogério Jerônimo Barbosa</strong></p>
+                <p>Doutor em Sociologia (USP)</span></p>
+                <br>
+                <p><strong>André Ricardo Frederico</strong></p>
+                <p>Mestre em Ciência da Computação (UFABC)</p>
+                <br>
+                <p><strong>Clóvis K. Hanashiro</strong></p>
+                <p>Mestre em Engenharia da Computação (USP)</p>
+                <br>
+                <p><strong>Mariela Atausinchi Fernandes</strong></p>
+                <p>Mestre em Ciência da Computação (USP)</p>
             </div>
-            <div class="modal-footer">
+            <!--<div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            </div>
+            </div>-->
         </div>
     </div>
 </div>
@@ -610,16 +632,16 @@
     </div>
 </div>
 
-<!-- Modal: informações iniciais para o usuário para mexer com o app -->
+<!-- Modal: informações iniciais para o usuário mexer com o app -->
 <div class="modal fade" id="pageloadModal" tabindex="-1" role="dialog" aria-labelledby="pageloadModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title" id="pageloadModalLabel">Bem-vindo a nossa plataforma!</h3>
+            <!--<div class="modal-header">
+                <h3 class="modal-title" id="pageloadModalLabel">Bem vindo ao CEM-Dados: Censos Demográficos</h3>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
-            </div>
+            </div>-->
             <div class="modal-body">
 
                 <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
@@ -628,71 +650,110 @@
                         <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
                         <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
                         <li data-target="#carouselExampleIndicators" data-slide-to="3"></li>
+                        <li data-target="#carouselExampleIndicators" data-slide-to="4"></li>
                     </ol>
                     <div class="carousel-inner">
                         <div class="carousel-item active">
                             <!--<img class="d-block w-100" src="images/slides-modal-pageload/forum-home.png" alt="First slide">-->
-                            <div class="carrousel-text-alert" role="alert" >
+                            <div class="modal-header modal-body-header">
+                                <h3 class="text-center">Bem-vindo ao CEM-Dados: Censos Demográficos</h3>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="carrousel-text-alert" role="alert" style="font-size: large;">
                                 <p>
-                                Esta plataforma pretende divulgar/expandir o uso dos dados censitários para um público
-                                mais amplo – reduzindo os custos de capacitação técnica para a
-                                utilização.
+                                    Esta é uma <b class="text-primary">versão Beta</b> da plataforma do Centro de Estudos da Metrópole tem o objetivo de auxiliar na difusão
+                                    e uso dos microdados das Amostras dos Censos Demográficos realizados decenalmente pelo IBGE.
                                 </p>
-                                <p>A plataforma serve para consulta e
-                                cruzamento dos dados, por meio de uma interface gráfica intuitiva e
-                                amigável; permitindo que por exemplo estudantes de graduação, profissionais de
-                                outras áreas (em especial, jornalismo) interessados em produzir seus
-                                próprios dados a partir das fontes primárias originais possam manipular os dados
-                                sem muita complicação.
+                                <p>
+                                    Por meio de uma interface gráfica intuitiva e amigável, estudante, pesquisador ou profissional
+                                    interessado pode obter informações e extrair variáveis e registros dos microdados originais.
                                 </p>
                                 <hr>
-                                <h4>
-                                    <a href="#">Esperamos que você faça bom proveito!</a>
-                                </h4>
+                                <!--<h4>
+                                    <a class="link-background-dark" href="#">Esperamos que você faça bom proveito!</a>
+                                </h4>-->
                             </div>
 
                         </div>
                         <div class="carousel-item">
-                            <img class="d-block w-100" src="images/slides-modal-pageload/censo-app.png" alt="Forum">
-                            <!--<div class=" carousel-caption d-none d-block alert" style="background: rgba(0,0,0,0.6);">
-                                <h6>A Plataforma passo a passo</h6>
+                            <div class="modal-header modal-body-header">
+                                <h3 class="text-center">Como utilizar</h3>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <img class="d-block w-100" src="images/slides-modal-pageload/censo-app-blue.png" alt="censo-app">
+                            <div class="carrousel-text-alert" role="alert" style="font-size: large; padding: 2.0rem 4.45rem;"></div>
+
+                        </div>
+                        <div class="carousel-item">
+                            <div class="modal-header modal-body-header">
+                                <h3 class="text-center"><b class="text-primary">Lembre-se</b>, utilize os pesos amostrais!</h3>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="carrousel-text-alert" role="alert" style="font-size: large">
+                                <i class="fa fa-2x fa-book" style="margin-bottom: 20px;"></i>
+                                <br>
+                                <p>
+                                    Para fazer inferências a partir das amostras dos Censos Demográficos,
+                                    é sempre necessário fazer análises utilizando os <b class="text-yellow">PESOS AMOSTRAIS</b>.
+                                </p>
+                                <hr>
+                            </div>
+                            <!--<div class="carousel-caption d-none d-sm-block alert carrousel-modal">
+                                <i class="fa fa-2x fa-book"></i>
+                                <p style="font-size: 14px;">Para fazer inferências a partir das amostras dos Censos Demográficos,
+                                    é sempre necessário fazer análises utilizando os PESOS AMOSTRAIS. </p>
                             </div>-->
                         </div>
                         <div class="carousel-item">
-                            <img class="d-block w-100" src="images/slides-modal-pageload/forum.png"  alt="Third slide...">
+                            <div class="modal-header modal-body-header">
+                                <h3 class="text-center">Tem sugestões ou dúvidas?</h3>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <img class="d-block w-100" src="images/slides-modal-pageload/forum-blue.png"  alt="Sugestões e dúvidas">
                             <div class="carousel-caption d-none d-sm-block alert carrousel-modal">
-                                <a href="http://200.144.244.241/foruns/" class="nav-link" title="Forum de discussões sobre a plataforma de extração de dados censitários">
-                                    <i class="fa fa-2x fa-comments"></i> <h5>Sugestões e dúvidas</h5>
+                                <a href="http://200.144.244.241/foruns/" class="nav-link"  target="_blank" title="Forum de discussões sobre a plataforma de extração de dados censitários">
+                                    <i class="fa fa-2x fa-comments"></i> <h5>Visite e participe do nosso Fórum!</h5>
                                 </a>
-                                <p>Um espaço construído especialmente para você. Com o objetivo de você poder deixar suas sugestões e esclarecer suas dúvidas.</p>
                             </div>
                         </div>
                         <div class="carousel-item">
-                            <img class="d-block w-100" src="images/slides-modal-pageload/wiki.png"  alt="Third slide...">
+                            <div class="modal-header modal-body-header">
+                                <h3 class="text-center">Tem sugestões ou quer saber sobre os censos?</h3>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <img class="d-block w-100" src="images/slides-modal-pageload/wiki-blue.png"  alt="Wikipedia dos dados">
                             <div class="carousel-caption d-none d-sm-block alert carrousel-modal">
-                                <a href="http://200.144.244.241/foruns/index.php/wiki" class="nav-link" title="Wikipedia sobre o Censo">
-                                    <i class="fa fa-2x fa-wikipedia-w"></i> <h5>WikiDados: Censos Demográficos</h5>
+                                <a href="http://200.144.244.241/foruns/index.php/wiki" class="nav-link"  target="_blank" title="Wikipedia sobre o Censo">
+                                    <h5>Consulte o <i class="fa fa-2x fa-wikipedia-w" style="margin-right: -9px;"></i> ikiDados!</h5>
                                 </a>
-                                <p>Esta página visa fornecer subsídios para o uso dos dados dos Censos Demográficos Brasileiros (1960-2010)
-                                    disponibilizados pelo Centro de Estudos da Metrópole (CEM). </p>
-                                <p>Aqui você poderá encontrar informações sobre como utilizar os dados, sobre conceitos e significados
-                                    empregados pelo IBGE, sobre as dificuldades implicadas na comparação longitudinal etc. </p>
                             </div>
                         </div>
                     </div>
-                    <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
-                        <span class="carousel-control-prev-icon text-dark" aria-hidden="true"></span>
-                        <span class="sr-only">Previous</span>
+                    <a class="carousel-control-prev carousel-control-link" style="top:70px; width: 25%; "  href="#carouselExampleIndicators" role="button" data-slide="prev">
+                        <!--<span class="carousel-control-prev-icon text-dark" aria-hidden="true"></span>-->
+                        <!--<span class="sr-only">Previous</span>-->
+                        <span class="carousel-indicators carousel-control-prev-icon" style="bottom: 20px;" aria-hidden="true"> </span>
+                        <span class="carousel-indicators navigator-controls">ANTERIOR</span>
                     </a>
-                    <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
-                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                        <span class="sr-only  text-dark">Next</span>
+                    <a class="carousel-control-next carousel-control-link" style="top:70px; width: 25%;" href="#carouselExampleIndicators" role="button" data-slide="next">
+                        <span class="carousel-indicators carousel-control-next-icon "  style="bottom: 20px;" aria-hidden="true"></span>
+                        <span class="carousel-indicators navigator-controls"> PRÓXIMO</span>
                     </a>
                 </div>
             </div>
-            <div class="modal-footer">
+            <!--<div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            </div>
+            </div>-->
         </div>
     </div>
 </div>

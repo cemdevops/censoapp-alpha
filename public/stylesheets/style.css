@@ -87,7 +87,7 @@ a {
 }
 /*maf*/
 .bg-dark-green {
-    background-color: #2bb673;/*21585f*/ /*#173e43*/
+    background-color: #00468E;/*21585f*/ /*#173e43*/
     color: #ffffff; /*ffffff;*/
 }
 
@@ -99,12 +99,21 @@ a {
     color: #373c4f; /*#173e43*/
 }
 
+.text-yellow {
+    color: #CD921C;
+}
+
 a {
-    color: #2bb673;
+    color: #00468E;
 }
 
 a:hover {
     color: #CD921C;
+}
+
+
+.link-background-dark {
+    color: #59ABFF;
 }
 
 /*maf*/
@@ -209,24 +218,25 @@ a, .mdl-accordion, .mdl-button, .mdl-card, .mdl-checkbox, .mdl-dropdown-menu, .m
 /*carrousel*/
 .carousel-caption {
     position: absolute;
-    right: 15%;
-    bottom: 0px;
-    left: 15%;
+    right: 0%;
+    bottom: -15px;
+    left: 0%;
     z-index: 10;
     padding-top: 20px;
-    padding-bottom: 20px;
+    padding-bottom: 30px;
     color: #fff;
     text-align: center;
     background: rgba(55,60,79,0.8);
 }
 
-.carousel-caption a {
-    color: #2bb673;
+.carousel-caption a, a.carousel-control-link {
+    color: #59ABFF;
 }
 
-.carousel-caption a:hover {
+.carousel-caption a:hover, a.carousel-control-link:hover {
     color: #CD921C;
 }
+
 
 .carrousel-text-alert {
     right: 15%;
@@ -240,8 +250,74 @@ a, .mdl-accordion, .mdl-button, .mdl-card, .mdl-checkbox, .mdl-dropdown-menu, .m
     text-align: center;
 }
 
+.navigator-controls {
+    bottom: 20px;
+    font-weight: 600;
+    opacity: 1;
+    font-size: 15px;
+}
+
 /*nav pills*/
 .nav-pills .nav-link.active, .nav-pills .show>.nav-link {
     color: #ffffff;
-    background-color: #2bb673;
+    background-color: #00468E;
 }
+
+/*brand*/
+.navbar-brand {
+    display: inline-block;
+    padding-top: 0rem;
+    padding-bottom: 0rem;
+    margin: -7px -15px;
+    font-size: 1.5rem;
+    line-height: inherit;
+    white-space: nowrap;
+}
+
+/*brand title*/
+#brand-title-vertical {
+    margin-top: 3px;
+    margin-bottom: 3px;
+    color: rgba(255,255,255,0.5);
+    font-weight: 600; font-size: 26px;
+}
+
+/*brand subtitle*/
+#brand-subtitle-vertical {
+    font-weight: normal;
+    font-size: 13px;
+    margin-bottom: 0rem;
+    color: rgba(255,255,255,1);
+}
+
+/*brand title*/
+#brand-title-horizontal {
+    margin-top: 10px;
+    opacity: 0.9;
+    font-weight: 600;
+    font-size: 26px;
+}
+
+/*brand subtitle*/
+#brand-subtitle-horizontal {
+    font-weight: normal;
+    font-size: 14px;
+    margin-bottom: 0.3rem;
+}
+
+#main-container {
+    margin-top:90px;
+}
+
+<!-- Arrows -->
+.carousel-control-top {
+    top: 70px!important;
+}
+
+.modal-body-header {
+    margin-bottom: 10px;
+}
+
+
+
+
