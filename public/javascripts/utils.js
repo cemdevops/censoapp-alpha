@@ -133,7 +133,39 @@ exports.createSQL = function (objreq, sview) {
     }
   }
   console.log("Array years: " + arrayAnos);
-  shearder +=  " FROM cHeader." + strCollection + "Header";
+  if (arrayAnos.length == 1) {
+    // Contorno temporário para retirar prefixo: refaz select...
+    shearder = "SELECT ";
+    for (i = 0; i < arrayVar.length; i++) {
+      var selem = arrayVar[i];
+      svarCode = selem.varCode.replace("VAR","V");
+      switch (selem.year) {
+        case 2010: spref = "c10_";
+                   break;
+        case 2000: spref = "c00_";
+                   break;
+        case 1991: spref = "c91_";
+                   break;
+        case 1980: spref = "c80_";
+                   break;
+        case 1970: spref = "c70_";
+                   break;
+        case 1960: spref = "c60_";
+                   break;
+        default: spref = "c10_";
+                 break;
+      }
+      if (i < (arrayVar.length - 1))
+         shearder += spref + svarCode + " as " + svarCode + ", ";
+      else
+         shearder +=  spref + svarCode + " as " + svarCode;
+    }
+    // ... Contorno temporário para retirar prefixo: refaz select
+
+    shearder +=  " FROM cHeader." + strCollection + "HeaderSemPrefixo";
+  } else {
+    shearder +=  " FROM cHeader." + strCollection + "Header";
+  }
   if (sview) 
     shearder += " WHERE (0=1) "
   else 
@@ -269,7 +301,7 @@ exports.getEmailHTMLBody = function (strUniqueID, objQryData) {
 
   console.log ("objQryData: ", objQryData);
 
-  strManualLink = "<div> Manuais IBGE:";
+  strManualLink = "<div> Documentação complementar:";
 
   strVarTable = "<table style='border: 1px solid black;width:200px;text-align:center'>" +
       "  <tr style='border: 1px solid black;width:200px;text-align:center'>" +
@@ -282,7 +314,7 @@ exports.getEmailHTMLBody = function (strUniqueID, objQryData) {
   for (i = 0; i < objQryData.length; i++) {
     strManualLink += "  <br>" +
         "  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
-        " <a href='http://" + cfg.APP_IP + "/" + cfg.APP_CENSO_MANUAL_FILES_FOLDER + "Manual" + objQryData[i].year + ".zip'> Censo " + objQryData[i].year + " </a>";
+        " <a href='http://" + cfg.APP_IP + "/" + cfg.APP_CENSO_MANUAL_FILES_FOLDER + "Censo " + objQryData[i].year + " - Documentação complementar.zip'> Censo " + objQryData[i].year + " </a>";
     var varSel = objQryData[i].var;
     // Consulta para cada variável do ano
     for (j = 0; j < varSel.length; j++) {
@@ -312,7 +344,7 @@ exports.getEmailHTMLBody = function (strUniqueID, objQryData) {
       " <a href='http://" + cfg.APP_IP + ":" + cfg.APP_PORT + "/files/download?file=" + strUniqueID + "&ty=0'>Arquivo de dados</a>" +
       "  <br>" +
       "  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
-      " <a href='http://" + cfg.APP_IP + ":" + cfg.APP_PORT + "/files/download?file=" + strUniqueID + "&ty=1'> Dicionário de dados</a>" +
+      " <a href='http://" + cfg.APP_IP + ":" + cfg.APP_PORT + "/files/download?file=" + strUniqueID + "&ty=1'> Dicionário de códigos</a>" +
       "</p>" +
       strManualLink +
       "<p><u>Atenção</u>:&nbsp;<i>Os arquivos ficarão disponíveis por 24h</i></p>" +

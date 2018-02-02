@@ -156,7 +156,7 @@ router.get('/download', function(req,res){
           strFile = resFind [0].file;
         } else {
           // Arquivo de metadados
-          strFile = cfg.MONET_DB_OUTPUT_FOLDER + resFind [0].simpleFn + ".zip";
+          strFile = cfg.MONET_DB_OUTPUT_FOLDER + resFind [0].simpleFn + " - Dicionário das variáveis selecionadas.zip";
         }
         
         if (fs.existsSync(strFile)) { 
