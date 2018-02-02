@@ -216,10 +216,12 @@ function consultaMD (arrVar1, callback) {
           case 0:
           case 5:
           case 6:
-            strFile = result[i].collection.variable.category[0].label + "_" + result[i].year + ".xls";
+//            strFile = result[i].collection.variable.category[0].label + "_" + result[i].year + ".xls";
+            strFile = "Censo " + result[i].year + " - Variável " + result[i].collection.variable.varCode +
+                      " - Categorias e Alternativas.xls";
             fileArray.push (strFile);
             //strLine += result[i].collection.variable.catType + " - ***VER***" + '\t';
-            strLine += "Ver arquivo auxiliar " + strFile + "\n";
+            strLine += "Consultar arquivo auxiliar " + strFile + "\n";
             break;
           case 1:
           case 2: // Campos com categorias
@@ -331,7 +333,8 @@ geraArquivoMetadados = function (objMD, tCol, fileName, callback) {
     // Cria arquivos
     resultFile = "Ano\tVariável\tLabel\tDescrição\tPopulação a qual se aplica\tObservação\tCategorias\n"
                   + resultFile;
-    var strMetadataFileName = cfg.MONET_DB_OUTPUT_FOLDER + fileName + ".xls";
+//    var strMetadataFileName = cfg.MONET_DB_OUTPUT_FOLDER + fileName + ".xls";
+    var strMetadataFileName = cfg.MONET_DB_OUTPUT_FOLDER + fileName + " - Dicionário das variáveis selecionadas.xls";
     fs.writeFile(strMetadataFileName, resultFile, {encoding: "latin1"}, function(err) {
       if (err) {
         console.log ("Erro na geração de arquivo: ", err)
@@ -339,12 +342,13 @@ geraArquivoMetadados = function (objMD, tCol, fileName, callback) {
       }
       console.log("Gerou arquivo: ", strMetadataFileName);
       // Cria arquivo compactado com arquivos de metadados.
-      var strCmd = "zip -j " + cfg.MONET_DB_OUTPUT_FOLDER + fileName + ".zip " + strMetadataFileName;
+//      var strCmd = "zip -j " + cfg.MONET_DB_OUTPUT_FOLDER + fileName + ".zip " + strMetadataFileName;
+      var strCmd = "zip -j \"" + cfg.MONET_DB_OUTPUT_FOLDER + fileName + " - Dicionário das variáveis selecionadas.zip\" \"" + strMetadataFileName + "\"";
       for (intAuxFiles = 0; intAuxFiles < arg3.length; intAuxFiles++) {
         strFile = cfg.APP_AUX_FILES_FOLDER + arg3 [intAuxFiles];
         try {
           if (fs.statSync(strFile).isFile()) {
-            strCmd += " " + strFile;
+            strCmd += " \"" + strFile + "\"";
           }
         } catch (err) {
           console.log ("Arquivo não existe: ", strFile);
